@@ -1099,4 +1099,175 @@ fn test_release_workflow_smoke_test_job_invariants() {
         !smoke_job_block.contains("RELEASE_MINISIGN_PASSWORD"),
         "smoke-test job must NOT receive RELEASE_MINISIGN_PASSWORD"
     );
+
+    // Invariant 7: Windows pwsh step must not contain invalid variable-colon interpolation ($ArchiveName:)
+    assert!(
+        !smoke_job_block.contains("$ArchiveName:"),
+        "smoke-test must NOT contain invalid variable interpolation '$ArchiveName:' (causes PowerShell ParserError)"
+    );
+    assert!(
+        smoke_job_block.contains("${ArchiveName}:"),
+        "smoke-test must contain correctly delimited variable '${{ArchiveName}}:'"
+    );
+}
+
+#[test]
+#[allow(clippy::too_many_lines)]
+fn test_release_workflow_powershell_scripts_syntax() {
+    let workflow_path = repo_root()
+        .join(".github")
+        .join("workflows")
+        .join("release.yml");
+    let content = fs::read_to_string(&workflow_path)
+        .expect("read release.yml")
+        .replace("\r\n", "\n");
+
+    // Textual verification across entire workflow:
+    // Ensure no $var: exists unless $env:
+    for (line_idx, line) in content.lines().enumerate() {
+        let mut rest = line;
+        while let Some(dollar_pos) = rest.find('$') {
+            rest = &rest[dollar_pos + 1..];
+            if let Some(colon_pos) = rest.find(':') {
+                let candidate = &rest[..colon_pos];
+                if !candidate.is_empty()
+                    && candidate
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '_')
+                {
+                    assert!(
+                        candidate.eq_ignore_ascii_case("env"),
+                        "Line {line_num} has invalid PowerShell variable-colon interpolation '${candidate}:': {line}",
+                        line_num = line_idx + 1,
+                        candidate = candidate,
+                        line = line
+                    );
+                }
+            }
+        }
+    }
+
+    // Semantic verification: invoke PowerShell parser when pwsh/powershell is available
+    let ps_cmd = if std::process::Command::new("pwsh")
+        .args(["-NoProfile", "-Command", "exit 0"])
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+    {
+        Some("pwsh")
+    } else if std::process::Command::new("powershell")
+        .args(["-NoProfile", "-Command", "exit 0"])
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+    {
+        Some("powershell")
+    } else {
+        None
+    };
+
+    if let Some(cmd) = ps_cmd {
+        // Extract pwsh script blocks from workflow
+        let mut blocks = Vec::new();
+        let lines: Vec<&str> = content.lines().collect();
+        let mut idx = 0;
+        while idx < lines.len() {
+            if lines[idx].trim() == "shell: pwsh" {
+                // Find run: |
+                idx += 1;
+                while idx < lines.len() && !lines[idx].trim().starts_with("run:") {
+                    idx += 1;
+                }
+                if idx < lines.len() && lines[idx].trim().starts_with("run:") {
+                    idx += 1;
+                    let mut script_lines = Vec::new();
+                    while idx < lines.len() {
+                        let l = lines[idx];
+                        if !l.is_empty()
+                            && !l.starts_with("        ")
+                            && !l.starts_with("          ")
+                        {
+                            break;
+                        }
+                        script_lines.push(l);
+                        idx += 1;
+                    }
+                    blocks.push(script_lines.join("\n"));
+                    continue;
+                }
+            }
+            idx += 1;
+        }
+
+        assert!(
+            blocks.len() >= 2,
+            "Expected at least 2 pwsh script blocks in release.yml, found {}",
+            blocks.len()
+        );
+
+        let temp_dir = std::env::temp_dir();
+        let parser_script_path =
+            temp_dir.join(format!("ps_ast_validator_{}.ps1", std::process::id()));
+        let parser_code = r#"
+param($scriptPath)
+$code = [System.IO.File]::ReadAllText($scriptPath)
+$tokens = $null
+$errors = $null
+[System.Management.Automation.Language.Parser]::ParseInput($code, [ref]$tokens, [ref]$errors) | Out-Null
+if ($errors.Count -gt 0) {
+    foreach ($err in $errors) {
+        [Console]::Error.WriteLine("ParserError at line $($err.Extent.StartLineNumber): $($err.Message)")
+    }
+    exit 1
+}
+exit 0
+"#;
+        fs::write(&parser_script_path, parser_code).expect("write parser script");
+
+        for (i, block) in blocks.iter().enumerate() {
+            // Replace GitHub Actions expressions like ${{ ... }} with mock identifiers
+            let mut sanitized = block.clone();
+            while let Some(start) = sanitized.find("${{") {
+                if let Some(end) = sanitized[start..].find("}}") {
+                    sanitized.replace_range(start..start + end + 2, "mock_val");
+                } else {
+                    break;
+                }
+            }
+
+            let snippet_path =
+                temp_dir.join(format!("ps_snippet_{}_{}.ps1", std::process::id(), i));
+            fs::write(&snippet_path, &sanitized).expect("write snippet script");
+
+            let output = std::process::Command::new(cmd)
+                .args([
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    parser_script_path.to_str().unwrap(),
+                    "-scriptPath",
+                    snippet_path.to_str().unwrap(),
+                ])
+                .output()
+                .expect("execute powershell parser");
+
+            let _ = fs::remove_file(&snippet_path);
+
+            if !output.status.success() {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                let _ = fs::remove_file(&parser_script_path);
+                panic!(
+                    "PowerShell script block {} failed AST parse check via {}:\n{}\n\nBlock content:\n{}",
+                    i + 1,
+                    cmd,
+                    stderr,
+                    sanitized
+                );
+            }
+        }
+
+        let _ = fs::remove_file(&parser_script_path);
+    }
 }

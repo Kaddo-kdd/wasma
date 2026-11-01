@@ -1,7 +1,7 @@
 ---
 id: AN-072
 type: feature
-status: ready
+status: in-progress
 created_at: 2026-10-26T00:00:00.000Z
 title: 'Versión, commit y procedencia del despliegue en el footer'
 knowledge_level: K2
@@ -17,6 +17,7 @@ domains:
 code:
   - website/src/layouts/Site.astro
   - website/src/components/**
+  - website/src/lib/**
   - website/src/styles/**
   - website/package.json
   - website/scripts/**

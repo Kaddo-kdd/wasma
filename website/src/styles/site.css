@@ -504,7 +504,54 @@ p {
   margin: 20px 0 10px;
 }
 .site-footer small {
+  display: block;
   color: var(--muted);
+}
+.deploy-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.deploy-meta .meta-sep {
+  color: var(--muted);
+  user-select: none;
+  opacity: 0.7;
+}
+.site-footer a.commit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 0;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--line);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.site-footer a.commit-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.site-footer a.commit-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.deploy-meta .dev-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--muted);
+  background: var(--surface);
 }
 .page-hero {
   padding: 75px 0 45px;

@@ -1,5 +1,6 @@
 ---
 import Brand from "../components/Brand.astro";
+import { getDeploymentMeta } from "../lib/deployment";
 import "../styles/site.css";
 interface Props {
   title: string;
@@ -9,6 +10,7 @@ const { title, description } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = new URL(path, Astro.site);
 const preview = import.meta.env.CONTEXT === "deploy-preview";
+const deployMeta = getDeploymentMeta();
 ---
 
 <!doctype html>
@@ -85,6 +87,23 @@ const preview = import.meta.env.CONTEXT === "deploy-preview";
         <Brand />
         <p>De la especificación al mundo real.</p>
         <small>Open source · Licencia MIT</small>
+        <div class="deploy-meta" aria-label="Versión y procedencia del despliegue">
+          <span class="deploy-version">{deployMeta.versionLabel}</span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          {deployMeta.isCommit ? (
+            <a
+              class="commit-link"
+              href={deployMeta.commitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver commit en GitHub"
+            >
+              commit {deployMeta.shortSha} <span aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span class="dev-badge">dev</span>
+          )}
+        </div>
       </div>
       <div>
         <strong>Construye</strong>

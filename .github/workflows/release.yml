@@ -553,6 +553,9 @@ jobs:
               # 6. Ejecutar directamente el binario extraído (sin cargo run ni target/)
               Write-Host "Executing standalone: wasma.exe --help"
               $HelpOut = & $ExePath --help
+              if ($LASTEXITCODE -ne 0) {
+                  throw "wasma.exe --help failed with exit code $LASTEXITCODE"
+              }
               Write-Host ($HelpOut -join "`n")
               if (-not ($HelpOut -match "wasma")) {
                   throw "ERROR: wasma.exe --help output does not mention wasma"
@@ -560,6 +563,9 @@ jobs:
 
               Write-Host "Executing standalone: wasma.exe --version"
               $VersionOut = & $ExePath --version
+              if ($LASTEXITCODE -ne 0) {
+                  throw "wasma.exe --version failed with exit code $LASTEXITCODE"
+              }
               Write-Host ($VersionOut -join "`n")
               if (-not ($VersionOut -match "0\.1\.0")) {
                   throw "ERROR: wasma.exe --version output does not report 0.1.0"

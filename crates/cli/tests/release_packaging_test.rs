@@ -1109,6 +1109,16 @@ fn test_release_workflow_smoke_test_job_invariants() {
         smoke_job_block.contains("${ArchiveName}:"),
         "smoke-test must contain correctly delimited variable '${{ArchiveName}}:'"
     );
+
+    // Invariant 8: Windows pwsh step must explicitly enforce $LASTEXITCODE -eq 0 for --help and --version
+    assert!(
+        smoke_job_block.contains("wasma.exe --help failed with exit code $LASTEXITCODE"),
+        "smoke-test must verify $LASTEXITCODE for wasma.exe --help"
+    );
+    assert!(
+        smoke_job_block.contains("wasma.exe --version failed with exit code $LASTEXITCODE"),
+        "smoke-test must verify $LASTEXITCODE for wasma.exe --version"
+    );
 }
 
 #[test]

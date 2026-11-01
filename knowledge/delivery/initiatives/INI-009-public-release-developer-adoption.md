@@ -50,7 +50,7 @@ candidates:
     priority: P1
     suggested_knowledge_level: K2
     expected_value: Sección editorial «Sobre el autor» en la landing con contexto profesional y origen de Wasma
-    materialized_as: AN-071 (candidate)
+    materialized_as: AN-071 (completed)
     dependencies:
       - AN-077
   - id: INIT-09-05

@@ -41,7 +41,7 @@ candidates:
     priority: P0
     suggested_knowledge_level: K3
     expected_value: Binarios reproducibles para Linux x86_64 GNU, Windows x86_64 MSVC y macOS ARM64 bajo identidad Wasma
-    materialized_as: AN-070 (candidate)
+    materialized_as: AN-070 (completed)
     dependencies:
       - AN-069
   - id: INIT-09-04

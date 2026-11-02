@@ -59,7 +59,7 @@ candidates:
     priority: P1
     suggested_knowledge_level: K2
     expected_value: Metadatos generados en build (versión web, SHA corto trazable a commit en repo canónico)
-    materialized_as: AN-072 (candidate)
+    materialized_as: AN-072 (completed)
     dependencies:
       - AN-079
   - id: INIT-09-06

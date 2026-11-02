@@ -1,10 +1,11 @@
 <p align="center">
-  <img src="assets/agent-native-banner.png" alt="Agent Native — Agentes de IA para un mundo real" width="100%">
+  <img src="website/src/assets/wasma-banner.png" alt="Wasma — WebAssembly Agents" width="100%">
 </p>
 
-# Agent-Native
+# Wasma
 
 > Sistema open source para convertir especificaciones funcionales y cambios incrementales en **componentes WebAssembly ejecutables, verificables y versionados** — con IA en tiempo de construcción y ejecución determinista sin LLM.
+> *(Proyecto anteriormente conocido durante su fase inicial como Agent Native; consulte [ADR-008](knowledge/tech/decisions/ADR-008-identidad-tecnica-migracion-wasma.md)).*
 
 [![CI](https://github.com/Kaddo-kdd/wasma/actions/workflows/ci.yml/badge.svg)](https://github.com/Kaddo-kdd/wasma/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Kaddo-kdd/wasma?color=blue)](https://github.com/Kaddo-kdd/wasma/releases)
@@ -41,9 +42,9 @@ Bloques del roadmap:
 
 > La POC histórica vive en [`Trycatch-tv/poc-agent-native`](https://github.com/Trycatch-tv/poc-agent-native) (commit `26b6a18`) y bajo `_reference/`. Es **sólo lectura** — ver [`knowledge/tech/reference-policy.md`](knowledge/tech/reference-policy.md).
 
-## Qué resuelve Agent-Native
+## Qué resuelve Wasma
 
-Un LLM puede escribir código, pero esa salida no es un **contrato ejecutable** por sí misma. Agent-Native cierra la distancia entre *intención funcional* y *software ejecutable* en tres pasos verificables:
+Un LLM puede escribir código, pero esa salida no es un **contrato ejecutable** por sí misma. Wasma (anteriormente Agent Native) cierra la distancia entre *intención funcional* y *software ejecutable* en tres pasos verificables:
 
 1. **Especificación** — una narrativa Markdown + requisitos se interpretan como `SystemSpec`.
 2. **Construcción (con IA)** — un agente LLM propone Semantic IR; el **verifier** la valida; el **compilador** la convierte a WASM Component Model con WIT y hash SHA-256.
@@ -59,45 +60,102 @@ Un LLM puede escribir código, pero esa salida no es un **contrato ejecutable** 
 
 ## Quick start
 
-Requisitos: `cargo` 1.85+ (`rust-toolchain.toml` lo pinnea).
+### 1. Inicio rápido en 5 minutos (Evaluación con binario precompilado)
+
+No requiere Rust ni herramientas de compilación. Descargue el binario oficial `wasma` correspondiente a su sistema operativo ([Guía de instalación](docs/installation.md) / [Instalación en el portal](https://wasma.org/docs/installation/)) y compruebe su funcionamiento:
 
 ```bash
-git clone https://github.com/Kaddo-kdd/wasma
+wasma --version
+```
+
+Cree un archivo `identity.json` con la especificación mínima en Semantic IR:
+
+```json
+{
+  "ir_version": "0.1",
+  "spec_version": 1,
+  "functions": [
+    {
+      "name": "identity",
+      "export": true,
+      "params": [{ "name": "value", "type": "i32" }],
+      "returns": "i32",
+      "requirements": ["SMOKE-001"],
+      "body": { "op": "param", "name": "value" }
+    }
+  ]
+}
+```
+
+Verifique estáticamente el contrato y compílelo a WebAssembly Component Model:
+
+```bash
+wasma verify identity.json
+wasma build identity.json --output identity.wasm
+```
+
+Ejecute la función en sandbox determinista con límite de fuel:
+
+```bash
+wasma run --component identity.wasm --function identity --fuel 100000 42
+```
+
+Salida esperada: el entero `42` y código de salida `0`.
+
+Para ejecutar pruebas de aceptación automatizadas, cree `identity.yaml`:
+
+```yaml
+suite: identity-tutorial
+spec_version: 1
+cases:
+  - id: identity-42
+    requirement: SMOKE-001
+    function: identity
+    args: [42]
+    expected: 42
+```
+
+```bash
+wasma test --suite identity.yaml --component identity.wasm
+```
+
+### 2. Paquetes de distribución precompilados
+
+Los paquetes oficiales previstos para la release v0.1.0 incluyen:
+
+- **Linux (x86_64 GNU):** `wasma-v0.1.0-x86_64-unknown-linux-gnu.tar.gz`
+- **macOS (Apple Silicon ARM64):** `wasma-v0.1.0-aarch64-apple-darwin.tar.gz`
+- **Windows (x86_64 MSVC):** `wasma-v0.1.0-x86_64-pc-windows-msvc.zip`
+
+Cada distribución se acompaña de su catálogo de integridad criptográfica `SHA256SUMS`.
+*(Nota: Las descargas oficiales en GitHub Releases se activarán formalmente con el tag oficial en AN-076).*
+
+### 3. Compilación desde fuente (Contribuidores y desarrolladores)
+
+Requisitos: `cargo` 1.85+ (`rust-toolchain.toml` lo fija).
+
+```bash
+git clone https://github.com/Kaddo-kdd/wasma.git
 cd wasma
 
-cargo build --workspace
+cargo build --locked --release -p wasma-cli --bin wasma
 cargo test --workspace     # 162 tests verdes (18 ir + 17 compiler + 73 runtime + 54 cli)
 ```
 
-### Uso de la CLI
+### 4. Subcomandos principales de la CLI `wasma`
 
-Construir un componente desde una especificación:
+- `wasma verify <FILE>`: Verifica estáticamente especificaciones Markdown o Semantic IR JSON.
+- `wasma build <FILE> --output <OUT.wasm>`: Compila especificaciones a componentes WebAssembly.
+- `wasma run --component <FILE> --function <FUNC> [--fuel <N>] <ARGS...>`: Ejecuta funciones en sandbox determinista.
+- `wasma test --suite <SUITE.yaml> --component <FILE.wasm>`: Ejecuta suites de pruebas de aceptación declarativas.
+- `wasma publish --component <FILE.wasm> --manifest <MANIFEST.json>`: Publica en el almacén local versionado.
 
-```bash
-agent-native build --spec spec.md --mode synthesizer --out ./dist/calculator.wasm
-```
-
-Verificar integridad y firmas criptográficas:
-
-```bash
-agent-native verify --component ./dist/calculator.wasm --manifest ./dist/manifest.json
-```
-
-Ejecutar con cuotas deterministas de fuel y límites de memoria:
-
-```bash
-agent-native run \
-  --component ./dist/calculator.wasm \
-  --function calculate \
-  --fuel 100000 \
-  --max-memory-bytes 16777216 \
-  10 20
-```
+Conforme a [ADR-008](knowledge/tech/decisions/ADR-008-identidad-tecnica-migracion-wasma.md), el binario oficial es `wasma`. Para scripts legados que invocaban `agent-native`, el alias retrocompatible se habilita mediante `cargo build --release -p wasma-cli --bin agent-native --features legacy-alias` y emite una advertencia de deprecación en `stderr`.
 
 ## Estructura del repositorio
 
 ```text
-agent-native/
+wasma/
 ├── assets/           # Imágenes y recursos estáticos del proyecto
 ├── crates/
 │   ├── ir/           # Semantic IR v0.5: modelo AST + verifier + schemas
@@ -141,7 +199,7 @@ El desarrollo sigue **Kaddo** (Knowledge-Driven Development) como fuente de verd
 - Cada incremento se materializa como un **Work Item** en [`knowledge/delivery/work-items/`](knowledge/delivery/work-items/) con criterios de aceptación verificables.
 - El [**roadmap**](knowledge/delivery/roadmap.md) organiza el trabajo en 8 bloques (RM-01..RM-08) y ~29 iniciativas trazables.
 
-Kaddo no es dependencia del producto — gestiona el **desarrollo** de Agent-Native, no sus artefactos ejecutables.
+Kaddo no es dependencia del producto — gestiona el **desarrollo** de Wasma, no sus artefactos ejecutables.
 
 ### Enlaces de conocimiento
 

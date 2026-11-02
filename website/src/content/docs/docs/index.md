@@ -7,8 +7,7 @@ Wasma conecta **especificación, verificación y ejecución**. Una narrativa pue
 en `SystemSpec`, después en Semantic IR, y finalmente en un componente WebAssembly.
 El runtime ejecuta componentes sin depender de un LLM ni del compilador.
 
-El proyecto está en desarrollo activo. **Wasma es el nombre público; la CLI todavía se
-llama `agent-native`**. Los crates, variables de entorno y repositorio conservan ese nombre.
+El proyecto está en desarrollo activo hacia su versión **v0.1.0** (INI-009). **Wasma es la identidad técnica oficial del proyecto** (conocido durante su fase de desarrollo preliminar como *Agent Native*; consulte [ADR-008](https://github.com/Kaddo-kdd/wasma/blob/main/knowledge/tech/decisions/ADR-008-identidad-tecnica-migracion-wasma.md)). La CLI canónica se distribuye como `wasma`, los paquetes oficiales se publican bajo `wasma-*` y la configuración emplea el prefijo `WASMA_LLM_*`.
 
 ## Tu primer recorrido
 

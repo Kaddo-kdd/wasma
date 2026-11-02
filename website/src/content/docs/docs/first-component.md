@@ -3,9 +3,10 @@ title: Tu primer componente
 description: Verifica, compila y ejecuta una función identity que devuelve 42, sin LLM ni credenciales.
 ---
 
-Este ejemplo empieza directamente con Semantic IR para aislar el recorrido de
-verificación y ejecución. **No usa generación por IA.** Necesitas la
-[CLI instalada](/docs/installation/) y un directorio vacío para los archivos del tutorial.
+Este ejemplo es la **guía Quickstart de 5 minutos** de Wasma. Empieza directamente con Semantic IR
+para aislar el recorrido de verificación y ejecución. **No usa generación por IA ni requiere credenciales.**
+Solo necesitas la [CLI `wasma` instalada](/docs/installation/) (mediante paquete precompilado o compilada desde fuente)
+y un directorio vacío para los archivos del tutorial.
 
 ## 1. Crea la entrada
 
@@ -86,6 +87,7 @@ argumentos inválidos o archivos ausentes pueden terminar con código `2`.
 
 ## Qué acabas de comprobar
 
-Entrada → verificación → compilación → invocación → aceptación. No hubo LLM en el
-recorrido. Para avanzar desde una narrativa consulta los [modos de CLI](/docs/cli/),
-y antes de ejecutar artefactos ajenos revisa [seguridad](/docs/security/).
+Entrada → verificación → compilación → invocación en sandbox determinista (salida `42`) → pruebas de aceptación.
+Todo el recorrido se ejecuta de forma autónoma, sin conexión de red y sin requerir claves de API.
+Para avanzar hacia la generación asistida por modelos, consulta los [modos de CLI](/docs/cli/),
+y antes de ejecutar artefactos externos revisa [seguridad](/docs/security/).

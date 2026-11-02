@@ -220,3 +220,35 @@ Wasma utiliza canónicamente el prefijo `WASMA_LLM_*`:
 
 > [!WARNING]
 > Las variables con prefijo heredado `AGENT_NATIVE_*` están obsoletas. Wasma emite una advertencia formal y se retirarán en versiones futuras. Migre siempre a `WASMA_LLM_*`.
+---
+
+## 6. Compilación desde fuente (Contribuidores y desarrolladores)
+
+Si desea modificar el código fuente de Wasma o contribuir al proyecto, puede compilar la CLI directamente mediante Rust y Cargo.
+
+### 6.1. Requisitos de desarrollo
+- Git.
+- Toolchain de Rust 1.85.0 (fijado de manera determinista en `rust-toolchain.toml`).
+- Compilador de C y linker nativo de la plataforma (`gcc`/`clang` en Linux, Xcode CLI tools en macOS, Visual Studio Build Tools con MSVC C++ en Windows).
+
+### 6.2. Compilación del binario oficial
+```bash
+git clone https://github.com/Kaddo-kdd/wasma.git
+cd wasma
+
+# Compilación optimizada del binario de la CLI
+cargo build --locked --release -p wasma-cli --bin wasma
+
+# Ejecutar smoke test local
+./target/release/wasma --version
+./target/release/wasma --help
+```
+
+### 6.3. Alias transitorio 'agent-native'
+Conforme a [ADR-008](../knowledge/tech/decisions/ADR-008-identidad-tecnica-migracion-wasma.md), la CLI canónica se distribuye exclusivamente como `wasma`. Para entornos con scripts legados que requieran compatibilidad con el comando anterior, Wasma proporciona el alias transitorio mediante la feature opt-in `legacy-alias`:
+
+```bash
+cargo build --locked --release -p wasma-cli --bin agent-native --features legacy-alias
+```
+
+Este alias imprime una advertencia formal en `stderr` recomendando la migración a `wasma` antes de Wasma v0.2.0.

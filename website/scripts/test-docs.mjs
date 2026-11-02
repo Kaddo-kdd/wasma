@@ -11,6 +11,7 @@ const executable = envBin
       "../target/release/wasma" +
         (process.platform === "win32" ? ".exe" : ""),
     );
+console.log(`Using executable: ${executable}`);
 const tutorial = readFileSync(
   "src/content/docs/docs/first-component.md",
   "utf8",

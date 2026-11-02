@@ -23,11 +23,11 @@ comprueba sobre el build, no solamente sobre dev. Salida: `website/dist/`.
 El tutorial ejecutable requiere una CLI compilada desde el mismo checkout:
 
 ```sh
-cargo build --locked --release -p agent-native
+cargo build --locked --release -p wasma-cli --bin wasma
 pnpm --dir website test:docs
 ```
 
-`AGENT_NATIVE_BIN` permite seleccionar una ruta absoluta alternativa; documenta su
+`WASMA_BIN` (o el alias de compatibilidad `AGENT_NATIVE_BIN`) permite seleccionar una ruta absoluta alternativa; documenta su
 SHA y procedencia. El script extrae fixtures y comandos de la página Markdown, usa un
 directorio temporal propio y verifica éxitos y fallo esperado. Nunca ejecuta texto
 de un servicio externo. Las pruebas de validadores usan fixtures temporales, sin

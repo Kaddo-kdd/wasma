@@ -26,10 +26,10 @@ Usa `wasma --help` y `wasma <comando> --help` para tu checkout concreto.
 | ------------- | ----------------------------------------------------- | ------------------------------------------------------------- |
 | `synthesizer` | Transformaciones heurísticas deterministas, limitadas | Especificación compatible; no interpreta narrativa arbitraria |
 | `fixtures`    | Artefactos predefinidos para casos soportados         | Fixture reconocido                                            |
-| `real`        | Generación mediante proveedor LLM y validación del IR | Configuración del proveedor y `WASMA_LLM_KEY (o AGENT_NATIVE_LLM_KEY)`          |
+| `real`        | Generación mediante proveedor LLM y validación del IR | Configuración del proveedor y `WASMA_LLM_KEY` (o alias legado `AGENT_NATIVE_LLM_KEY`) |
 
 El adaptador real también utiliza `WASMA_LLM_ENDPOINT` y
-`WASMA_LLM_MODEL` según configuración. No introduzcas claves en esta web,
+`WASMA_LLM_MODEL` según configuración. De acuerdo con ADR-008, `WASMA_LLM_*` es la configuración canónica; si se detecta `AGENT_NATIVE_LLM_*` se emite un aviso formal sin exponer credenciales. No introduzcas claves en esta web,
 capturas o archivos versionados. El runtime no requiere esas credenciales.
 
 ## Ejemplo ejecutable

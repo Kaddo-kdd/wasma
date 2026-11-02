@@ -1,9 +1,10 @@
 ---
 id: AN-073
 type: docs
-status: in-progress
+status: completed
 created_at: 2026-10-26T00:00:00.000Z
 ready_at: '2026-11-02'
+completed_at: '2026-11-02'
 title: 'Onboarding, quickstart y reconciliación de documentación'
 knowledge_level: K3
 suggested_knowledge_level: K3
@@ -62,7 +63,7 @@ La documentación del proyecto conservaba referencias a la compilación local de
 
 ## Entregable
 
-- `knowledge/delivery/work-items/in-progress/AN-073-onboarding-quickstart-docs-reconciliation.md` refinado, formalmente iniciado y verificado.
+- `knowledge/delivery/work-items/completed/AN-073-onboarding-quickstart-docs-reconciliation.md` cerrado formalmente y verificado.
 - `README.md` actualizado con la CLI real `wasma`, diferenciación usuario/desarrollador, eliminación de comandos ficticios y banner Wasma.
 - `docs/installation.md` y `website/src/content/docs/docs/installation.md` actualizados con paquetes precompilados v0.1.0 y activación en AN-076.
 - `website/src/content/docs/docs/first-component.md` y `website/src/content/docs/docs/cli.md` reconciliados con la CLI canónica.
@@ -70,7 +71,13 @@ La documentación del proyecto conservaba referencias a la compilación local de
 
 ## Evidencia de validación técnica
 
-1. **Procedencia del binario candidato validado**:
+1. **Sincronización remota y workflows automáticos**:
+   - **Commit publicado en `origin/main`**: [`70dc67e1121ba7e9d52afb50f57c5d2f1405aa5d`](https://github.com/Kaddo-kdd/wasma/commit/70dc67e1121ba7e9d52afb50f57c5d2f1405aa5d).
+   - **Workflow Website**: Run [`41495253497`](https://github.com/Kaddo-kdd/wasma/actions/runs/41495253497) — Exitoso (2m 18s). Jobs `website` y `documentation-smoke` en verde. Artefacto `wasma-static-site` generado.
+   - **Workflow CI Multiplataforma**: Run [`41495253749`](https://github.com/Kaddo-kdd/wasma/actions/runs/41495253749) — Exitoso (13m 27s). Matriz completa Linux x86_64, Windows x86_64 y macOS ARM64 aprobada al 100%.
+   - **Despliegue en producción (`https://wasma.org/`)**: Verificado con HTTP 200 en `/`, `/docs/installation/` y `/docs/first-component/`. El pie de página refleja `web v0.1.0 · commit 70dc67e ↗`.
+
+2. **Procedencia del binario candidato validado**:
    - **GitHub Actions Run ID**: `41271134318` (`Release Multi-Platform`, AN-070).
    - **Commit SHA completo**: `0ffa96346d92ace905b392b3147aff776da5fab9`.
    - **Artefacto origen**: `release-bundle` (descargado vía GitHub CLI).
@@ -79,7 +86,7 @@ La documentación del proyecto conservaba referencias a la compilación local de
    - **SHA-256 del binario extraído (`wasma.exe`)**: `807f7dbeb3e5a936546ed69dec472d3c081165372ee29e4e49bd722563fa3db5`.
    - **Plataforma y arquitectura**: Windows x86_64 MSVC.
 
-2. **Ejecución en entorno aislado**:
+3. **Ejecución en entorno aislado**:
    - Toolchain de Cargo, Rust y LLVM excluidos taxativamente del `PATH` (comprobado: `cargo` no disponible en entorno de prueba).
    - Variables de entorno LLM eliminadas (`WASMA_LLM_*`, `AGENT_NATIVE_*`).
    - Verificación de versión: `wasma 0.1.0` (código de salida 0).
@@ -89,12 +96,21 @@ La documentación del proyecto conservaba referencias a la compilación local de
    - Suite declarativa: `wasma test --suite identity.yaml --component identity.wasm` superada con `PASSED (1/1)`.
    - Prueba negativa de contrato: `wasma run --component identity.wasm --function missing 42` terminó con código explícito `1`.
 
-3. **Métricas de tiempo y alcance**:
+4. **Métricas de tiempo y alcance**:
    - **Tiempo de ejecución automatizada observado**: `508 ms` (~0.51 s) a `1.34 s` en la ejecución de los 6 pasos por la CLI.
-   - **Calibración de diseño**: Este tiempo corresponde estrictamente a la ejecución de comandos. La promesa «Quickstart de 5 minutos» permanece como objetivo de diseño ergonómico para humanos y será observada y calibrada formalmente con desarrolladores externos en AN-075.
+   - **Calibración de diseño**: Este tiempo corresponde estrictamente a la ejecución de comandos en Windows x86_64. La promesa «Quickstart de 5 minutos» permanece como objetivo de diseño ergonómico para humanos y será observada y calibrada formalmente con desarrolladores externos en AN-075.
 
-4. **Validación de documentación del portal**:
+5. **Validación de documentación del portal**:
    - `test-docs.mjs` ejecutado con `WASMA_BIN` apuntando explícitamente a `wasma.exe` extraído del paquete candidato, confirmando `Using executable: ...\wasma.exe` y validando todos los bloques de código sin recurrir a rutas implícitas.
+
+## Learning
+
+1. **Documentación ejecutable continua**: Scripts automáticos como `test-docs.mjs` que extraen y ejecutan directamente los bloques de código desde los archivos Markdown son indispensables para detectar desviaciones silenciosas entre los ejemplos públicos y las APIs reales de la CLI.
+2. **Validación contra artefactos distribuidos**: El onboarding y quickstart deben probarse obligatoriamente contra los paquetes binarios empaquetados por los pipelines de CI, en entornos limpios y sin herramientas de desarrollo en el `PATH`, para evitar falsos positivos derivados de dependencias locales no declaradas.
+3. **Integridad de procedencia vs. firma criptográfica**: La verificación local del hash SHA-256 contra catálogos reproducibles (`SHA256SUMS`) constituye una primera línea de defensa esencial en la cadena de suministro, independiente y complementaria a la firma criptográfica Minisign oficial.
+4. **Claridad sobre disponibilidad de releases**: Los artefactos y binarios candidatos generados por CI no deben presentarse como releases oficiales disponibles para descarga, explicitando siempre el hito en el que se activan formalmente en GitHub Releases (AN-076).
+5. **Diferenciación entre tiempo automatizado y experiencia humana**: El tiempo de ejecución automatizado observado de 508 ms (~0.51 s) mide la eficiencia de procesamiento de la CLI en el sandbox, pero no representa la duración completa del onboarding humano.
+6. **Piloto ergonómico en AN-075**: La promesa ergonómica de «Quickstart de 5 minutos» se mantiene como objetivo de diseño y debe validarse mediante observación y retroalimentación empírica con desarrolladores externos en AN-075.
 
 ## Fuera de alcance
 

@@ -68,7 +68,7 @@ candidates:
     priority: P0
     suggested_knowledge_level: K3
     expected_value: Ruta de inicio rápido para desarrolladores utilizando únicamente la CLI y rutas definitivas
-    materialized_as: AN-073 (candidate)
+    materialized_as: AN-073 (completed)
     dependencies:
       - AN-068
       - AN-070
@@ -78,7 +78,7 @@ candidates:
     priority: P1
     suggested_knowledge_level: K3
     expected_value: Dos aplicaciones de referencia (motor de reglas de negocio e integración host) bajo identidad Wasma
-    materialized_as: AN-074 (candidate)
+    materialized_as: AN-074 (ready)
     dependencies:
       - AN-070
   - id: INIT-09-08

@@ -8,19 +8,25 @@ Para asegurar rigor metodológico y transparencia:
 - **Prohibición de datos ficticios:** Bajo ninguna circunstancia se registrarán valores simulados como evidencia real. Todo dato numérico en los reportes debe proceder exclusivamente de una sesión genuina con un participante externo.
 
 ### Criterio de Reporte para Métricas Temporales
-Para cada métrica cronometrada ($T_{disc}, T_{verif}, T_{prep}, T_{qs}, T_{spec}$) el reporte debe desglosar obligatoriamente:
+Para cada métrica cronometrada ($T_{disc}, T_{transfer}, T_{verif}, $T_{prep}, T_{qs}, T_{rules}, T_{cargo}, T_{integ}$) el reporte debe desglosar obligatoriamente:
 1. **Participantes elegibles ($N_{\text{elegibles}}$):** Total de desarrolladores a quienes se les asignó la tarea.
 2. **Participantes completados ($N_{\text{completados}}$):** Participantes que alcanzaron el estado `completed` en la tarea.
-3. **Participantes excluidos ($N_{\text{excluidos}}$):** Participantes con estado `failed`, `partial` o `not-attempted` (su tiempo no contamina el cálculo de la mediana y se contabilizan en la tasa de fallo/abandono).
+3. **Participantes excluidos ($N_{\text{excluidos}}$):** Participantes con estado `failed`, `partial`, `abandoned` u `omitted_time_limit` (su tiempo no contamina el cálculo de la mediana y se contabilizan en la tasa de fallo/abandono).
 
-$$\text{Mediana}(T) = \text{percentil 50 de los tiempos registrados para } N_{\text{completados}}$$
+$$\text{Mediana}(T) = \text{percentil 50 de los tiempos netos registrados para } N_{\text{completados}}$$
+
+> [!NOTE]
+> **Agenda Organizativa vs. Límite Artificial:** La agenda general de 45 minutos es una estimación de referencia para coordinar las sesiones, **no un límite artificial** para declarar fallida una tarea al transcurrir exactamente 5 minutos. Si el participante avanza autónomamente, se mide el tiempo real invertido. Solo el abandono voluntario o el bloqueo irrecuperable justifican el cierre de la tarea.
 
 ### Fórmulas de Métricas Cuantitativas
+
+> [!NOTE]
+> **Intervenciones Logísticas vs. Técnicas:** La entrega controlada del paquete candidato por parte del facilitador ($T_{transfer}$) es un paso logístico intrínseco a la fase pre-release y **no cuenta como intervención ni penaliza la tasa de autonomía**. Solo las asistencias técnicas para superar obstáculos o rescates tras bloqueo de 5 minutos penalizan la autonomía.
 
 | Métrica | Definición / Fórmula | Denominador Explícito | Umbral de Éxito |
 | :--- | :--- | :--- | :--- |
 | **Tasa de Autonomía en Quickstart** | $\frac{N_{\text{qs\_autónomos}}}{N_{\text{qs\_intentados}}} \times 100$ | Total de participantes que iniciaron el Quickstart ($N_{\text{qs\_intentados}}$) | $\ge 80\%$ |
-| **Tiempo Mediano de Quickstart ($T_{qs}$)** | $\text{Mediana}(T_{qs})$ sobre $N_{\text{qs\_completados}}$ | Participantes con entorno preparado que obtuvieron el resultado `42` | $\le 5\text{ minutos}$ ($300\text{ s}$) |
+| **Tiempo Mediano de Quickstart ($T_{qs}$)** | $\text{Mediana}(T_{qs})$ sobre $N_{\text{qs\_completados}}$ | Participantes con entorno preparado que completaron autónomamente hasta el resultado `42` | $\le 5\text{ minutos}$ ($300\text{ s}$) |
 | **Tasa de Verificación SHA-256** | $\frac{N_{\text{sha\_verificado}}}{N_{\text{paquetes\_descargados}}} \times 100$ | Total de participantes que intentaron descargar y verificar el paquete | $\ge 90\%$ |
 | **Tasa de Autonomía en Reglas (Track A)** | $\frac{N_{\text{reglas\_autónomos}}}{N_{\text{track\_A\_intentados}}} \times 100$ | Participantes asignados exclusivamente al Perfil A | $\ge 75\%$ |
 | **Tasa de Comprensión Host (Track B)** | $\frac{N_{\text{host\_comprendido}}}{N_{\text{track\_B\_intentados}}} \times 100$ | Participantes asignados exclusivamente al Perfil B | $\ge 75\%$ |

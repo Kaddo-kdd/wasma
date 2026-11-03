@@ -38,28 +38,30 @@ Tras completar la infraestructura de empaquetado (AN-070), el portal y onboardin
 ## Alcance
 
 - Diseñar y preparar un protocolo formal de observación para un piloto con **5 a 10 desarrolladores externos** sin experiencia previa en Wasma.
-- Estructurar **dos recorridos con tarea común de Quickstart** para disponer de una métrica base comparable:
-  - **Tarea Común (ambos perfiles, cuando sea viable)**:
+- Estructurar **dos recorridos con tarea común obligatoria de Quickstart** para disponer de una métrica base comparable:
+  - **Tarea Común Obligatoria (ambos perfiles)**:
     - *Objetivo*: Medir la promesa ergonómica del Quickstart de 5 minutos ($T_{qs}$) en condiciones homogéneas.
     - *Alcance del cronómetro $T_{qs}$*: Se inicia en el instante en que el participante comienza el paso 1 de `/docs/first-component/` (con la CLI ya instalada y verificada en el shell) y concluye al obtener exitosamente el resultado `42`. Incluye lectura, creación de archivos (`identity.json`), copia de comandos, ejecución y corrección autónoma de errores.
-    - *Medición segregada*: Se registran de manera independiente los tiempos de descubrimiento ($T_{disc}$), descarga y verificación de hash SHA-256 ($T_{verif}$), e instalación y configuración del entorno / PATH ($T_{prep}$).
+    - *Medición segregada*: Se registran de manera independiente los tiempos de descubrimiento de documentación ($T_{disc}$), verificación de hash SHA-256 ($T_{verif}$), e instalación y configuración del entorno / PATH ($T_{prep}$). La entrega programada del paquete candidato por parte del facilitador se registra como intervención logística del protocolo (sin costo de autonomía).
+    - *Estados observables*: Si un participante decide omitir, suspender o no alcanza a completar el Quickstart, se registra como `completed`, `abandoned` u `omitted_time_limit` sin alterar retroactivamente el criterio de elegibilidad.
   - **Perfil A — Usuario de la CLI (3 a 5 participantes)**:
-    - *Objetivo*: Evaluar descubrimiento, instalación, verificación criptográfica, Quickstart y exploración del motor de reglas comerciales.
+    - *Objetivo*: Evaluar descubrimiento de documentación, recepción y verificación criptográfica, Quickstart y exploración del motor de reglas comerciales.
     - *Tareas especializadas*:
-      1. Descubrir el producto en el portal `wasma.org` y repositorio canónico.
-      2. Obtener el paquete candidato y verificar su hash SHA-256 contra `SHA256SUMS`.
+      1. Descubrir la documentación de instalación y primeros pasos en el portal `wasma.org` y repositorio.
+      2. Recibir el paquete candidato precompilado mediante transferencia logística programada y verificar su hash SHA-256 contra `SHA256SUMS`.
       3. Instalar la CLI `wasma` y verificar la versión.
       4. Completar el tutorial de inicio rápido (`/docs/first-component/`) sin toolchains de Rust en el PATH.
       5. Modificar una entrada o valor de prueba y ejecutar la evaluación del componente `examples/business-rules/`.
   - **Perfil B — Desarrollador Backend / Sistemas (2 a 5 participantes)**:
-    - *Objetivo*: Evaluar la comprensión del runtime embebido, límites de ejecución y políticas de seguridad.
+    - *Objetivo*: Evaluar la comprensión del runtime embebido, límites de ejecución y políticas de seguridad, habiendo realizado la tarea común de Quickstart.
     - *Tareas especializadas*:
-      1. Completar la tarea común de Quickstart (opcional / cuando aplique para comparabilidad).
+      1. Completar la tarea común obligatoria de Quickstart con la CLI precompilada.
       2. Localizar la guía del host embebido (`/docs/examples/embedded-host/`).
-      3. Compilar y ejecutar la aplicación host de referencia (`examples/embedded-host/`).
+      3. Compilar y ejecutar la aplicación host de referencia (`examples/embedded-host/`), midiendo por separado el tiempo de resolución/compilación de Cargo ($T_{cargo}$) y el tiempo cognitivo de integración ($T_{integ}$).
       4. Explicar e identificar en el código el funcionamiento de las cuotas deterministas de fuel y memoria (`ExecutionLimits`) y las políticas *deny-by-default* (`HostPolicy`).
       5. Comprender la distinción entre desalojo de caché (`Resolver::reset()`) y aislamiento estricto de fallos mediante Stores independientes.
-- Observación pasiva estricta: los participantes realizan las tareas de forma autónoma. El observador no ofrece asistencia técnica activa; cualquier intervención requerida se registra minuciosamente y penaliza la tasa de autonomía.
+- Observación pasiva estricta: los participantes realizan las tareas de forma autónoma. El observador no ofrece asistencia técnica activa; cualquier intervención de rescate requerida se registra minuciosamente y penaliza la tasa de autonomía (distinguiendo claramente las intervenciones logísticas de entrega de paquete de las asistencias técnicas).
+- Observabilidad de seguridad del SO: no indicar proactivamente la desactivación de Gatekeeper o eliminación de atributos de cuarentena (`xattr -d`); la respuesta del participante ante advertencias del SO debe ser observable.
 - Diseñar el mecanismo de distribución de binarios candidatos asegurando que no se presenten como releases oficiales y preservando los gates de seguridad de AN-076.
 - Recopilar, categorizar y priorizar todas las fricciones detectadas según una matriz de severidad formal, publicando un informe consolidado de hallazgos para orientar el cierre de AN-076 y el backlog posterior.
 
@@ -71,10 +73,14 @@ Para cada participante se registrará una ficha estandarizada con los siguientes
 - **Perfil asignado**: Perfil A (CLI) o Perfil B (Backend).
 - **Entorno del participante**: Sistema operativo (Linux, Windows, macOS), arquitectura de CPU, shell predeterminado y nivel de familiaridad con WebAssembly / Rust.
 - **Tiempos cronometrados segregados**:
-  - *Tiempo de descubrimiento ($T_{disc}$)*: Desde la búsqueda inicial hasta localizar el paquete o repositorio.
-  - *Tiempo de descarga y verificación ($T_{verif}$)*: Obtención del binario candidato y cotejo del hash SHA-256 contra `SHA256SUMS`.
+  - *Tiempo de descubrimiento ($T_{disc}$)*: Desde la búsqueda inicial hasta localizar la guía de instalación en el portal o repositorio.
+  - *Tiempo de entrega del paquete ($T_{transfer}$)*: Traspaso directo del paquete precompilado y `SHA256SUMS` por canal privado (intervención logística programada, sin costo de autonomía).
+  - *Tiempo de verificación criptográfica ($T_{verif}$)*: Cálculo y cotejo del hash SHA-256 contra `SHA256SUMS` (medido de forma segregada a la entrega).
   - *Tiempo de instalación y preparación ($T_{prep}$)*: Descompresión, adición al PATH y verificación de `wasma --version`.
-  - *Tiempo de Quickstart ($T_{qs}$)*: Tiempo neto desde el primer comando de `/docs/first-component/` hasta la salida `42` (con binario funcional).
+  - *Tiempo de Quickstart ($T_{qs}$)*: Tiempo neto desde el primer paso de `/docs/first-component/` hasta la salida `42` (con binario funcional).
+  - *Tiempo de reglas de negocio ($T_{rules}$)*: Ejecución de `suite.yaml` y modificación de regla (Perfil A).
+  - *Tiempo de build Cargo ($T_{cargo}$)*: Resolución y compilación de dependencias host en Rust (Perfil B).
+  - *Tiempo cognitivo de integración host ($T_{integ}$)*: Comprensión y explicación de límites y aislamiento (Perfil B).
 - **Tasa de autonomía**:
   - Finalización autónoma (Sí / Parcial / No).
   - Número y naturaleza de intervenciones requeridas del observador (con registro del incidente exacto y causa).
@@ -103,13 +109,14 @@ Antes del inicio de las sesiones se establecen los siguientes umbrales de éxito
 
 ### 5. Protección y privacidad de los participantes
 - Asignación estricta de identificadores anónimos (`DEV-01` .. `DEV-10`).
-- Consentimiento informado previo para la toma de notas técnicas y eventual grabación de pantalla/audio de la sesión.
+- Distinción entre la tabla seudónima de sesiones (`DEV-XX`) y el registro de contactos de reclutamiento (PII), el cual conserva de manera confidencial y offline el responsable humano del piloto fuera de Git.
+- Consentimiento informado en tres capas independientes: (1) participación en la prueba y métricas anónimas, (2) uso compartido de pantalla, y (3) grabación audiovisual (no obligatoria para participar; si se declina, se documenta únicamente con notas observacionales).
 - Prohibición absoluta de registrar o versionar datos de carácter personal (nombres reales, correos, empresas, rutas de usuario del sistema operativo) en el repositorio o en los informes públicos de Kaddo.
 
 ## Distribución de paquetes candidatos
 
-- **Procedencia inmutable**: Los binarios candidatos se obtienen exclusivamente de los artefactos compilados y empaquetados por los pipelines automatizados de GitHub Actions (Run ID `41271134318` o ejecuciones auditadas de `release-packaging`), cuyos hashes coinciden exactamente con el catálogo `SHA256SUMS`.
-- **Canal de distribución**: Los archivos se entregarán mediante un canal seguro de pre-distribución técnica acompañado de su `SHA256SUMS` correspondiente, garantizando que el participante pueda descargarlos sin barreras de autenticación en GitHub ni vencimiento de artefactos (90 días).
+- **Procedencia inmutable**: Los binarios candidatos se obtienen exclusivamente de los artefactos compilados y empaquetados por los pipelines automatizados de GitHub Actions (Run ID `41271134318`, commit `0ffa96346d92ace905b392b3147aff776da5fab9`), cuyos hashes coinciden exactamente con el catálogo `SHA256SUMS`.
+- **Canal de distribución autorizado (Ronda 1)**: Los archivos se entregarán exclusivamente mediante **entrega directa de los paquetes originales comprimidos y su catálogo `SHA256SUMS` por un canal privado** (transferencia de archivo durante la sesión). Queda terminantemente prohibido habilitar servicios de hosting externo, generar enlaces públicos de staging o publicar releases preliminares en GitHub Releases.
 - **Aviso de procedencia explícito**: Todo material distribuido contendrá la advertencia:
   > *«Binario candidato para validación de experiencia de desarrollador (pre-release técnica v0.1.0). No constituye una release pública oficial.»*
 - **Preservación de controles**: No se habilitarán releases públicas en GitHub Releases, no se modificarán las condiciones de publicación (`publish: if: false`), no se crearán tags Git ni se aplicarán firmas Minisign oficiales durante esta fase, manteniéndose dichos mecanismos bajo la custodia estricta de AN-076.

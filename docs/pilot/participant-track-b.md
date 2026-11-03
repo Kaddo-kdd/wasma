@@ -14,17 +14,20 @@ Por favor, comparte tu pantalla y expresa en voz alta tus pensamientos, dudas e 
 
 ## Tareas a realizar
 
-### Tarea 1 (Común): Quickstart con la CLI (Opcional según disponibilidad de tiempo)
-1. Localiza el binario de la CLI `wasma` precompilado o utilízalo si ya se encuentra en tu entorno.
-2. Completa los pasos de la guía `https://wasma.org/docs/first-component/` hasta obtener el resultado `42`.
+### Tarea 1 (Común Obligatoria): Quickstart con la CLI Wasma
+1. El facilitador te suministrará el paquete binario candidato de la CLI `wasma` correspondiente a tu plataforma mediante transferencia controlada (intervención logística pre-release).
+2. Consulta la guía oficial en `https://wasma.org/docs/first-component/`.
+3. Sigue los pasos descritos para compilar y ejecutar tu primer componente hasta obtener el resultado `42`.
+*(Nota: Si decides omitir o abandonar esta tarea, o si se agota el tiempo asignado a este bloque, infórmalo al facilitador para registrar el estado observable correspondiente).*
 
 ### Tarea 2: Localización y Estructura del Host Embebido
 1. Accede a la documentación del ejemplo del host embebido en `https://wasma.org/docs/examples/embedded-host/` o al código en `examples/embedded-host/`.
-2. Revisa la estructura del proyecto, sus dependencias y cómo se vincula la aplicación host con el runtime de Wasma.
+2. Revisa la estructura del proyecto, sus dependencias y cómo se vincula la aplicación host con el runtime de Wasma (`wasma-runtime`).
 
-### Tarea 3: Compilación y Ejecución del Demostrador
-1. Abre el repositorio del proyecto en tu entorno de desarrollo.
+### Tarea 3: Compilación y Ejecución del Host Embebido
+1. Abre el repositorio del proyecto en tu entorno de desarrollo local.
 2. Siguiendo las instrucciones de la guía de documentación, compila y ejecuta la aplicación de integración host en tu terminal.
+*(Nota metodológica: El facilitador medirá por separado el tiempo de descarga/compilación de dependencias de Cargo para aislar el rendimiento de red y CPU del tiempo de comprensión e integración técnica).*
 3. Observa los escenarios ejecutados en la consola e identifica los diferentes tipos de ejecución y capturas de error que se presentan.
 
 ### Tarea 4: Análisis Conceptual y Explicación en Código

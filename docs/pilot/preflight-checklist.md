@@ -23,17 +23,31 @@ Verificar que los paquetes disponibles coinciden exactamente con el catálogo in
 2. **Linux x86_64 GNU**:
    - Archivo: `wasma-v0.1.0-dev-0ffa963-x86_64-unknown-linux-gnu.tar.gz`
    - SHA-256: `b0a7ddbf1c1df3e877bf408ebc46dd6622ec20fa49c323ba0c8227b6c507c95d`
-   - Método de instalación: Extracción con `tar -xzf`, verificación de permisos `0755` y enlace o adición al `PATH`.
+   - Método de instalación: Extracción con `tar -xzf`, verificación de permisos de ejecución (`chmod +x wasma` si es necesario) y colocación en el `PATH`.
 3. **macOS ARM64 (Apple Silicon)**:
    - Archivo: `wasma-v0.1.0-dev-0ffa963-aarch64-apple-darwin.tar.gz`
    - SHA-256: `d866a2fe0a9e22fb753a6697fa297072a297e6e5888e404fbe9e3ce7e2fc2c4b`
-   - Método de instalación: Extracción con `tar -xzf`, verificación de atributos de cuarentena (`xattr -d com.apple.quarantine wasma` si aplica) y adición al `PATH`.
+   - Método de instalación: Extracción con `tar -xzf` y colocación en el `PATH`.
+   - *Nota de observación:* **No sugerir proactivamente la eliminación de atributos de cuarentena (`xattr -d`) ni la desactivación de Gatekeeper.** Se debe observar naturalmente la interacción del participante con los avisos de seguridad del sistema operativo y si la guía oficial le orienta adecuadamente.
 
-### C. Mecánica de Entrega a Participantes Externos
-- [ ] **Acceso sin barreras**: La descarga de artefactos directos desde la interfaz de GitHub Actions requiere inicio de sesión en GitHub. Para participantes que no tengan cuenta o para prevenir vencimiento (90 días), el facilitador proporcionará los paquetes mediante entrega directa o un canal de staging privado pre-aprobado.
-- [ ] **Aprobación previa de hosting**: Queda prohibido habilitar nuevos servicios o repositorios de hospedaje externo sin previa autorización formal.
+### C. Mecánica de Entrega Autorizada (Ronda 1)
+- [ ] **Canal Privado Exclusivo**: La distribución autorizada para la Ronda 1 se realiza exclusivamente mediante **entrega directa de los paquetes originales comprimidos y su catálogo `SHA256SUMS` por un canal privado** (transferencia de archivos en la sesión).
+- [ ] **Prohibiciones estrictas de publicación**:
+  - Queda terminantemente **prohibido habilitar nuevos servicios o repositorios de hospedaje externo** sin autorización previa.
+  - Queda prohibido generar enlaces públicos de staging o publicar una release preliminar en GitHub Releases.
+  - Se mantienen estrictamente intactos los gates de seguridad (`publish: if: false`), firmas Minisign y tags de AN-076.
 - [ ] **Etiquetado transparente de pre-release**:
-  > *«Binario candidato para validación de experiencia de desarrollador (pre-release técnica). No constituye una release oficial v0.1.0.»*
+  > *«Binario candidato para validación de experiencia de desarrollador (pre-release técnica v0.1.0). No constituye una release pública oficial.»*
+
+### D. Estado de Validación Preflight por Plataforma y Gestión de Riesgos
+- [ ] **Windows x86_64 (MSVC) — VALIDADO**:
+  - Binario candidato `wasma.exe` (SHA-256: `807f7dbeb3e5a936546ed69dec472d3c081165372ee29e4e49bd722563fa3db5`) verificado localmente.
+  - `wasma --version` devuelve `wasma 0.1.0`.
+  - Quickstart verificado: generación de `identity.wasm` (44 bytes) e invocación con resultado `42`.
+  - Suite de reglas comerciales verificada: `wasma test --suite examples/business-rules/suite.yaml --component examples/business-rules/discount_rules.wasm` con **24/24 PASSED**.
+- [ ] **Linux x86_64 y macOS ARM64 — RIESGO OPERACIONAL ABIERTO**:
+  - **Advertencia metodológica**: Las comprobaciones automatizadas de CI en AN-070 (Run `41271134318`) confirman la compilación y empaquetado del candidato, pero **no equivalen a una prueba manual del binario candidato contra los ejemplos actuales de `main`**.
+  - **Disponibilidad de entorno**: Si el facilitador dispone de un entorno nativo compatible antes de la sesión, debe ejecutar el Quickstart y las 24 pruebas de `suite.yaml`. Si no se dispone de dicho entorno (host de desarrollo sin WSL/Docker), **se mantiene el riesgo operativo formalmente abierto y no se declara la plataforma como completamente validada**.
 
 ---
 
@@ -48,7 +62,7 @@ Verificar que los paquetes disponibles coinciden exactamente con el catálogo in
   - [ ] Ningún enlace roto o que apunte a `localhost` o rutas de staging internas.
   - [ ] Los enlaces a GitHub apuntan a la rama `main` del repositorio canónico `https://github.com/Kaddo-kdd/wasma`.
 - [ ] **Coherencia visual y footer**:
-  - [ ] El footer muestra `web v0.1.0` y el enlace al commit desplegado en producción.
+  - [ ] El footer muestra `web v0.1.0` y el enlace al commit desplegado en producción (`5cb29f1`).
 
 ---
 
@@ -59,17 +73,29 @@ Verificar que los paquetes disponibles coinciden exactamente con el catálogo in
 - [ ] **Quickstart sin toolchain de Rust**:
   - [ ] El tutorial funciona de punta a punta sin que `cargo` ni `rustc` estén instalados o en el `PATH`.
   - [ ] El ciclo `verify` -> `build` -> `run --component identity.wasm --function identity 42` produce el resultado `42`.
-  - [ ] `wasma test` ejecuta la suite declarativa con éxito.
+- [ ] **Suite de pruebas de reglas comerciales**:
+  - [ ] Comando verificado: `wasma test --suite examples/business-rules/suite.yaml --component examples/business-rules/discount_rules.wasm` (o desde `examples/business-rules/`: `wasma test --suite suite.yaml --component discount_rules.wasm`) aprueba los 24 casos.
 - [ ] **Cero dependencias externas en tiempo de ejecución**:
   - [ ] La CLI no requiere claves de API (p. ej. `WASMA_LLM_KEY` ni variables `AGENT_NATIVE_*`) ni conexión a internet para compilar o ejecutar componentes locales.
 
 ---
 
-## 4. Gobernanza, Privacidad y Validez Metodológica
-- [ ] **Consentimiento de participantes**:
-  - [ ] Acuerdo informado previo para toma de notas y grabación técnica interna exclusiva.
-- [ ] **Ficha anónima preparada**:
-  - [ ] ID único asignado (`DEV-01` a `DEV-10`) sin registrar nombres personales, correos, empresas ni rutas personales.
+## 4. Gobernanza, Privacidad y Baseline Experimental (Ronda 1)
+- [ ] **Baseline Experimental Congelado**:
+  - [ ] Commit del portal y documentación: `5cb29f1290ed750b5686050d1a6d35880bf7c0f4`.
+  - [ ] Commit del binario candidato: `0ffa96346d92ace905b392b3147aff776da5fab9`.
+  - [ ] Run ID de distribución CI: `41271134318`.
+  - [ ] Versión de instrumentos de evaluación: `AN-075-v1.0 (Ronda 1)`.
+- [ ] **Consentimiento informado en 3 capas independientes**:
+  - [ ] Capa 1: Participación voluntaria y registro métrico anónimo (obligatoria).
+  - [ ] Capa 2: Compartir pantalla durante la sesión remota (obligatoria para observación).
+  - [ ] Capa 3: Grabación audiovisual con fines de análisis técnico interno (opcional; si se declina, se procede con toma de notas sin excluir al participante).
+- [ ] **Medición y Autonomía**:
+  - [ ] La entrega logística del paquete se cronometra por separado ($T_{transfer}$) de la verificación SHA-256 ($T_{verif}$) y no se computa como asistencia técnica.
+  - [ ] No indicar a los participantes la desactivación preventiva de Gatekeeper o SmartScreen.
+- [ ] **Ficha anónima preparada (Zero-PII)**:
+  - [ ] ID único asignado (`DEV-01` a `DEV-10`).
+  - [ ] Cero almacenamiento de nombres, emails o datos de contacto en el repositorio Git (mantenidos exclusivamente de forma offline y confidencial por el responsable humano del piloto).
 - [ ] **Segregación de pruebas internas**:
   - [ ] Las corridas técnicas internas y preflight del facilitador **nunca** se contabilizarán como sesiones del piloto ni formarán parte de la muestra de 5 a 10 desarrolladores externos.
 - [ ] **Alineación con AN-076**:

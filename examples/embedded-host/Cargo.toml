@@ -1,0 +1,12 @@
+[package]
+name = "wasma-example-embedded-host"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[workspace]
+
+[dependencies]
+wasma-runtime = { path = "../../crates/runtime", version = "0.1.0" }
+wat = "1.221"

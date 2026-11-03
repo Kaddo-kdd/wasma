@@ -68,6 +68,9 @@ jobs:
       - name: Build release (all features)
         run: cargo build --workspace --release --all-features
 
+      - name: Embedded host tests (${{ matrix.os }})
+        run: cargo test --manifest-path examples/embedded-host/Cargo.toml --locked
+
       - name: Enforce ADR-002 (runtime does not depend on compiler)
         shell: bash
         run: |
@@ -117,3 +120,24 @@ jobs:
 
       - name: Offline integration tests - Native Benchmark (11 tests)
         run: cargo test --manifest-path examples/aws-lambda-benchmark/native/Cargo.toml
+
+      - name: Verify formatting (embedded-host)
+        run: cargo fmt --manifest-path examples/embedded-host/Cargo.toml -- --check
+
+      - name: Clippy (embedded-host)
+        run: cargo clippy --manifest-path examples/embedded-host/Cargo.toml --all-targets --locked -- -D warnings
+
+      - name: Offline integration tests - Embedded Host (7 tests)
+        run: cargo test --manifest-path examples/embedded-host/Cargo.toml --locked
+
+      - name: Business rules example verification & 24 acceptance tests
+        shell: bash
+        run: |
+          set -e
+          cd examples/business-rules
+          cargo run --locked -p wasma-cli --bin wasma -- verify discount-rules.ir.json
+          TMP_WASM=$(mktemp --suffix=.wasm)
+          cargo run --locked -p wasma-cli --bin wasma -- build discount-rules.ir.json -o "$TMP_WASM"
+          cmp -s discount_rules.wasm "$TMP_WASM" || { echo "WASM regeneration mismatch"; exit 1; }
+          rm -f "$TMP_WASM"
+          cargo run --locked -p wasma-cli --bin wasma -- test --suite suite.yaml --component discount_rules.wasm

@@ -1,0 +1,550 @@
+{
+  "ir_version": "0.5",
+  "spec_version": 1,
+  "wit_contract": {
+    "package": "wasma:examples@0.1.0",
+    "world": "business-rules",
+    "export_interface": "rules",
+    "import_interfaces": [],
+    "wit_file": "rules.wit"
+  },
+  "types": [
+    {
+      "name": "discount_summary",
+      "fields": [
+        {
+          "name": "status_code",
+          "type": "i32"
+        },
+        {
+          "name": "discount_cents",
+          "type": "i32"
+        },
+        {
+          "name": "final_amount_cents",
+          "type": "i32"
+        },
+        {
+          "name": "applied_rate",
+          "type": "i32"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "build_discount_record",
+      "export": false,
+      "params": [
+        {
+          "name": "order_amount_cents",
+          "type": "i32"
+        },
+        {
+          "name": "rate",
+          "type": "i32"
+        }
+      ],
+      "returns": "discount_summary",
+      "body": {
+        "op": "record.construct",
+        "type": "discount_summary",
+        "fields": {
+          "status_code": {
+            "op": "const",
+            "type": "i32",
+            "value": 200
+          },
+          "discount_cents": {
+            "op": "div_s",
+            "left": {
+              "op": "mul",
+              "left": {
+                "op": "param",
+                "name": "order_amount_cents"
+              },
+              "right": {
+                "op": "param",
+                "name": "rate"
+              }
+            },
+            "right": {
+              "op": "const",
+              "type": "i32",
+              "value": 100
+            }
+          },
+          "final_amount_cents": {
+            "op": "sub",
+            "left": {
+              "op": "param",
+              "name": "order_amount_cents"
+            },
+            "right": {
+              "op": "div_s",
+              "left": {
+                "op": "mul",
+                "left": {
+                  "op": "param",
+                  "name": "order_amount_cents"
+                },
+                "right": {
+                  "op": "param",
+                  "name": "rate"
+                }
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 100
+              }
+            }
+          },
+          "applied_rate": {
+            "op": "param",
+            "name": "rate"
+          }
+        }
+      }
+    },
+    {
+      "name": "build_error_record",
+      "export": false,
+      "params": [
+        {
+          "name": "status",
+          "type": "i32"
+        }
+      ],
+      "returns": "discount_summary",
+      "body": {
+        "op": "record.construct",
+        "type": "discount_summary",
+        "fields": {
+          "status_code": {
+            "op": "param",
+            "name": "status"
+          },
+          "discount_cents": {
+            "op": "const",
+            "type": "i32",
+            "value": 0
+          },
+          "final_amount_cents": {
+            "op": "const",
+            "type": "i32",
+            "value": 0
+          },
+          "applied_rate": {
+            "op": "const",
+            "type": "i32",
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "evaluate_discount",
+      "export": true,
+      "wit_interface": "rules",
+      "params": [
+        {
+          "name": "order_amount_cents",
+          "type": "i32"
+        },
+        {
+          "name": "customer_tier",
+          "type": "i32"
+        },
+        {
+          "name": "loyalty_years",
+          "type": "i32"
+        }
+      ],
+      "returns": "discount_summary",
+      "requirements": [
+        "AN-074-BR-01"
+      ],
+      "body": {
+        "op": "if",
+        "condition": {
+          "op": "or",
+          "left": {
+            "op": "or",
+            "left": {
+              "op": "lt_s",
+              "left": {
+                "op": "param",
+                "name": "order_amount_cents"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 0
+              }
+            },
+            "right": {
+              "op": "gte_s",
+              "left": {
+                "op": "param",
+                "name": "order_amount_cents"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 20000001
+              }
+            }
+          },
+          "right": {
+            "op": "or",
+            "left": {
+              "op": "lt_s",
+              "left": {
+                "op": "param",
+                "name": "loyalty_years"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 0
+              }
+            },
+            "right": {
+              "op": "gte_s",
+              "left": {
+                "op": "param",
+                "name": "loyalty_years"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 101
+              }
+            }
+          }
+        },
+        "then": {
+          "op": "call",
+          "function": "build_error_record",
+          "args": [
+            {
+              "op": "const",
+              "type": "i32",
+              "value": 400
+            }
+          ]
+        },
+        "else": {
+          "op": "if",
+          "condition": {
+            "op": "eq",
+            "left": {
+              "op": "param",
+              "name": "customer_tier"
+            },
+            "right": {
+              "op": "const",
+              "type": "i32",
+              "value": 1
+            }
+          },
+          "then": {
+            "op": "if",
+            "condition": {
+              "op": "gte_s",
+              "left": {
+                "op": "param",
+                "name": "order_amount_cents"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 10000
+              }
+            },
+            "then": {
+              "op": "call",
+              "function": "build_discount_record",
+              "args": [
+                {
+                  "op": "param",
+                  "name": "order_amount_cents"
+                },
+                {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 5
+                }
+              ]
+            },
+            "else": {
+              "op": "call",
+              "function": "build_discount_record",
+              "args": [
+                {
+                  "op": "param",
+                  "name": "order_amount_cents"
+                },
+                {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 0
+                }
+              ]
+            }
+          },
+          "else": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "left": {
+                "op": "param",
+                "name": "customer_tier"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 2
+              }
+            },
+            "then": {
+              "op": "if",
+              "condition": {
+                "op": "gte_s",
+                "left": {
+                  "op": "param",
+                  "name": "loyalty_years"
+                },
+                "right": {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 3
+                }
+              },
+              "then": {
+                "op": "call",
+                "function": "build_discount_record",
+                "args": [
+                  {
+                    "op": "param",
+                    "name": "order_amount_cents"
+                  },
+                  {
+                    "op": "const",
+                    "type": "i32",
+                    "value": 12
+                  }
+                ]
+              },
+              "else": {
+                "op": "call",
+                "function": "build_discount_record",
+                "args": [
+                  {
+                    "op": "param",
+                    "name": "order_amount_cents"
+                  },
+                  {
+                    "op": "const",
+                    "type": "i32",
+                    "value": 10
+                  }
+                ]
+              }
+            },
+            "else": {
+              "op": "if",
+              "condition": {
+                "op": "eq",
+                "left": {
+                  "op": "param",
+                  "name": "customer_tier"
+                },
+                "right": {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 3
+                }
+              },
+              "then": {
+                "op": "if",
+                "condition": {
+                  "op": "gte_s",
+                  "left": {
+                    "op": "param",
+                    "name": "loyalty_years"
+                  },
+                  "right": {
+                    "op": "const",
+                    "type": "i32",
+                    "value": 5
+                  }
+                },
+                "then": {
+                  "op": "call",
+                  "function": "build_discount_record",
+                  "args": [
+                    {
+                      "op": "param",
+                      "name": "order_amount_cents"
+                    },
+                    {
+                      "op": "const",
+                      "type": "i32",
+                      "value": 25
+                    }
+                  ]
+                },
+                "else": {
+                  "op": "call",
+                  "function": "build_discount_record",
+                  "args": [
+                    {
+                      "op": "param",
+                      "name": "order_amount_cents"
+                    },
+                    {
+                      "op": "const",
+                      "type": "i32",
+                      "value": 20
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "op": "call",
+                "function": "build_error_record",
+                "args": [
+                  {
+                    "op": "const",
+                    "type": "i32",
+                    "value": 404
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "is_eligible_for_tier",
+      "export": true,
+      "wit_interface": "rules",
+      "params": [
+        {
+          "name": "customer_tier",
+          "type": "i32"
+        },
+        {
+          "name": "annual_spend_cents",
+          "type": "i32"
+        }
+      ],
+      "returns": "bool",
+      "requirements": [
+        "AN-074-BR-02"
+      ],
+      "body": {
+        "op": "if",
+        "condition": {
+          "op": "lt_s",
+          "left": {
+            "op": "param",
+            "name": "annual_spend_cents"
+          },
+          "right": {
+            "op": "const",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        "then": {
+          "op": "const",
+          "type": "bool",
+          "value": false
+        },
+        "else": {
+          "op": "if",
+          "condition": {
+            "op": "eq",
+            "left": {
+              "op": "param",
+              "name": "customer_tier"
+            },
+            "right": {
+              "op": "const",
+              "type": "i32",
+              "value": 1
+            }
+          },
+          "then": {
+            "op": "const",
+            "type": "bool",
+            "value": true
+          },
+          "else": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "left": {
+                "op": "param",
+                "name": "customer_tier"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 2
+              }
+            },
+            "then": {
+              "op": "gte_s",
+              "left": {
+                "op": "param",
+                "name": "annual_spend_cents"
+              },
+              "right": {
+                "op": "const",
+                "type": "i32",
+                "value": 50000
+              }
+            },
+            "else": {
+              "op": "if",
+              "condition": {
+                "op": "eq",
+                "left": {
+                  "op": "param",
+                  "name": "customer_tier"
+                },
+                "right": {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 3
+                }
+              },
+              "then": {
+                "op": "gte_s",
+                "left": {
+                  "op": "param",
+                  "name": "annual_spend_cents"
+                },
+                "right": {
+                  "op": "const",
+                  "type": "i32",
+                  "value": 200000
+                }
+              },
+              "else": {
+                "op": "const",
+                "type": "bool",
+                "value": false
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

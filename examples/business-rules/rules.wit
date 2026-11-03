@@ -1,0 +1,17 @@
+package wasma:examples@0.1.0;
+
+interface rules {
+    record discount-summary {
+        status-code: s32,
+        discount-cents: s32,
+        final-amount-cents: s32,
+        applied-rate: s32,
+    }
+
+    evaluate-discount: func(order-amount-cents: s32, customer-tier: s32, loyalty-years: s32) -> discount-summary;
+    is-eligible-for-tier: func(customer-tier: s32, annual-spend-cents: s32) -> bool;
+}
+
+world business-rules {
+    export rules;
+}

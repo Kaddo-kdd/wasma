@@ -64,6 +64,13 @@ export default defineConfig({
           ],
         },
         {
+          label: "Ejemplos",
+          items: [
+            { label: "Motor de reglas", slug: "docs/examples/business-rules" },
+            { label: "Host Rust embebido", slug: "docs/examples/embedded-host" },
+          ],
+        },
+        {
           label: "Proyecto",
           items: [
             { label: "Inicio", link: "/" },

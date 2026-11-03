@@ -1,7 +1,7 @@
 ---
 id: AN-074
 type: feature
-status: ready
+status: in-progress
 created_at: 2026-10-26T00:00:00.000Z
 title: Aplicaciones de referencia y pruebas E2E
 knowledge_level: K3
@@ -19,6 +19,7 @@ code:
   - docs/**
   - website/src/content/docs/**
   - website/astro.config.mjs
+  - .github/workflows/ci.yml
 expected_value: >-
   Construir dos aplicaciones de referencia con manifests, código y ejemplos bajo
   los nombres finales de Wasma, verificando que la migración de identidad

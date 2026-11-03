@@ -1,0 +1,220 @@
+suite: wasma-business-rules
+spec_version: 1
+cases:
+  # --- Positive Cases: Bronze Tier (customer_tier = 1) ---
+  - id: bronze-under-threshold
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [5000, 1, 1]
+    expected:
+      status-code: 200
+      discount-cents: 0
+      final-amount-cents: 5000
+      applied-rate: 0
+
+  - id: bronze-above-threshold-volume-bonus
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [15000, 1, 1]
+    expected:
+      status-code: 200
+      discount-cents: 750
+      final-amount-cents: 14250
+      applied-rate: 5
+
+  # --- Positive Cases: Silver Tier (customer_tier = 2) ---
+  - id: silver-standard-rate
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [20000, 2, 2]
+    expected:
+      status-code: 200
+      discount-cents: 2000
+      final-amount-cents: 18000
+      applied-rate: 10
+
+  - id: silver-loyalty-bonus
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [20000, 2, 4]
+    expected:
+      status-code: 200
+      discount-cents: 2400
+      final-amount-cents: 17600
+      applied-rate: 12
+
+  # --- Positive Cases: Gold Tier (customer_tier = 3) ---
+  - id: gold-standard-rate
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [50000, 3, 2]
+    expected:
+      status-code: 200
+      discount-cents: 10000
+      final-amount-cents: 40000
+      applied-rate: 20
+
+  - id: gold-loyalty-bonus
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [50000, 3, 6]
+    expected:
+      status-code: 200
+      discount-cents: 12500
+      final-amount-cents: 37500
+      applied-rate: 25
+
+  # --- Boundary Cases ---
+  - id: boundary-bronze-exact-threshold
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 1, 0]
+    expected:
+      status-code: 200
+      discount-cents: 500
+      final-amount-cents: 9500
+      applied-rate: 5
+
+  - id: boundary-silver-exact-loyalty-threshold
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 2, 3]
+    expected:
+      status-code: 200
+      discount-cents: 1200
+      final-amount-cents: 8800
+      applied-rate: 12
+
+  - id: boundary-gold-exact-loyalty-threshold
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 3, 5]
+    expected:
+      status-code: 200
+      discount-cents: 2500
+      final-amount-cents: 7500
+      applied-rate: 25
+
+  - id: boundary-zero-order-amount
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [0, 1, 0]
+    expected:
+      status-code: 200
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: boundary-max-allowed-amount
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [20000000, 3, 5]
+    expected:
+      status-code: 200
+      discount-cents: 5000000
+      final-amount-cents: 15000000
+      applied-rate: 25
+
+  # --- Negative / Error Cases ---
+  - id: error-negative-amount
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [-1, 1, 1]
+    expected:
+      status-code: 400
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: error-overflow-amount-exceeded
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [20000001, 1, 1]
+    expected:
+      status-code: 400
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: error-negative-loyalty
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 1, -1]
+    expected:
+      status-code: 400
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: error-excessive-loyalty
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 1, 101]
+    expected:
+      status-code: 400
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: error-unknown-tier-zero
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 0, 1]
+    expected:
+      status-code: 404
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  - id: error-unknown-tier-four
+    requirement: AN-074-BR-01
+    function: "wasma:examples/rules@0.1.0#evaluate-discount"
+    args: [10000, 4, 1]
+    expected:
+      status-code: 404
+      discount-cents: 0
+      final-amount-cents: 0
+      applied-rate: 0
+
+  # --- Eligibility Function Tests (is-eligible-for-tier) ---
+  - id: eligibility-bronze-zero-spend
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [1, 0]
+    expected: true
+
+  - id: eligibility-silver-qualifying
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [2, 50000]
+    expected: true
+
+  - id: eligibility-silver-disqualifying
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [2, 49999]
+    expected: false
+
+  - id: eligibility-gold-qualifying
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [3, 200000]
+    expected: true
+
+  - id: eligibility-gold-disqualifying
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [3, 199999]
+    expected: false
+
+  - id: eligibility-negative-spend-rejected
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [1, -500]
+    expected: false
+
+  - id: eligibility-unknown-tier-rejected
+    requirement: AN-074-BR-02
+    function: "wasma:examples/rules@0.1.0#is-eligible-for-tier"
+    args: [99, 1000000]
+    expected: false

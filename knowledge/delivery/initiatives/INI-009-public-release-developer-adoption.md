@@ -78,7 +78,7 @@ candidates:
     priority: P1
     suggested_knowledge_level: K3
     expected_value: Dos aplicaciones de referencia (motor de reglas de negocio e integración host) bajo identidad Wasma
-    materialized_as: AN-074 (ready)
+    materialized_as: AN-074 (completed)
     dependencies:
       - AN-070
   - id: INIT-09-08
@@ -87,7 +87,7 @@ candidates:
     priority: P1
     suggested_knowledge_level: K3
     expected_value: Prueba piloto con 5-10 desarrolladores externos con métricas de descubrimiento, instalación y fricción
-    materialized_as: AN-075 (candidate)
+    materialized_as: AN-075 (ready)
     dependencies:
       - AN-073
       - AN-074
@@ -264,22 +264,22 @@ flowchart TD
 
 ### Fase 0 — Consolidación de identidad técnica (Completada)
 
-**Secuencia:** AN-077 (completado) → AN-078 (completado) → AN-079 (completado).  
+**Secuencia:** AN-077 (completado) → AN-078 (completado) → AN-079 (completado).
 **Puerta de salida:** Identidad técnica aprobada (ADR-008), migración en workspace Rust validada sin regresiones (commit `dae2b5a` / `cc9ee0d`) y repositorio GitHub renombrado a `Kaddo-kdd/wasma` con integraciones operativas (commit `0cd2801`). Fase 100% finalizada.
 
 ### Fase 1 — Preparación y transparencia
 
-**Secuencia:** AN-068 (completado), AN-071 y AN-072.  
+**Secuencia:** AN-068 (completado), AN-071 y AN-072.
 **Puerta de salida:** Versión objetivo `0.1.0` y changelog consistentes en paquetes definitivos, sección del autor validada y metadatos del despliegue verificables en footer. (AN-071 puede avanzar en paralelo tras AN-077; AN-072 tras AN-079).
 
-### Fase 2 — Distribución y experiencia inicial
+### Fase 2 — Distribución y experiencia inicial (Completada)
 
-**Secuencia:** AN-069 → AN-070 → AN-073 / AN-074.  
-**Puerta de salida:** Release candidata instalable en 3 plataformas, firma Minisign verificable, documentación de onboarding y dos ejemplos de referencia funcionales.
+**Secuencia:** AN-069 (completado) → AN-070 (completado) → AN-073 (completado) / AN-074 (completado).
+**Puerta de salida:** Release candidata instalable en 3 plataformas, firma Minisign verificable, documentación de onboarding y dos ejemplos de referencia funcionales y probados. Fase 100% finalizada.
 
 ### Fase 3 — Validación y publicación
 
-**Secuencia:** AN-075 → AN-076.  
+**Secuencia:** AN-075 (ready, siguiente prioridad) → AN-076 (publicación oficial pendiente).
 **Puerta de salida:** Piloto con desarrolladores externos completado, reporte de fricciones analizado, defectos bloqueantes resueltos, autorización humana explícita y release oficial v0.1.0 publicada.
 
 ---

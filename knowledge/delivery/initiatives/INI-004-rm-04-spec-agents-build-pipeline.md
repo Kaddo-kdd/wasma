@@ -42,6 +42,7 @@ candidates:
     title: Trazabilidad artefacto ↔ Work Item / Spec
     status: completed
     materialized_as: AN-027
+epic: EP-004
 ---
 
 # RM-04 — Specification, Agents & Build Pipeline

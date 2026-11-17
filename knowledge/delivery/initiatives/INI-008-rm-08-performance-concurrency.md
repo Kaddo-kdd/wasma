@@ -38,6 +38,7 @@ candidates:
     status: completed
     materialized_as: 'AN-065, AN-066 y AN-067 (completed)'
 completed_at: '2026-10-24'
+epic: EP-008
 ---
 
 # RM-08 — Performance & Concurrency

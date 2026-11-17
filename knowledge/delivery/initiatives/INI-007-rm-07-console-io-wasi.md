@@ -22,7 +22,7 @@ candidates:
   - id: INIT-07-01
     title: Baseline WASI preview2 + stdio autorizado
     status: completed
-    materialized_as: AN-044 (completed), AN-045 (completed), AN-050 (completed)
+    materialized_as: 'AN-044 (completed), AN-045 (completed), AN-050 (completed)'
   - id: INIT-07-02
     title: Extensión IR para `string` y errores
     status: completed
@@ -31,6 +31,7 @@ candidates:
     title: Stubs deterministas de I/O para pruebas
     status: completed
     materialized_as: AN-049 (completed)
+epic: EP-007
 ---
 
 # RM-07 — Console I/O & WASI

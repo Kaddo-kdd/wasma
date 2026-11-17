@@ -27,11 +27,12 @@ candidates:
   - id: INIT-05-02
     title: API pública reutilizable del runtime
     status: completed
-    materialized_as: AN-029, AN-030
+    materialized_as: 'AN-029, AN-030'
   - id: INIT-05-03
     title: Pipeline de release para 3 triples objetivo
     status: completed
-    materialized_as: AN-031, AN-032
+    materialized_as: 'AN-031, AN-032'
+epic: EP-005
 ---
 
 # RM-05 — Standalone CLI & Runtime API

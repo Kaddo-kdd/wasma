@@ -1,12 +1,12 @@
 ---
 type: initiative
 id: INI-009
-title: INI-009 — Public Release, Technical Identity & Developer Adoption
+title: 'INI-009 — Public Release, Technical Identity & Developer Adoption'
 status: draft
 knowledge_level: K3
 priority: high
 domains:
-  - Developer Experience, Documentation & Branding
+  - 'Developer Experience, Documentation & Branding'
   - Distribution & Release
 related_capabilities:
   - Artifact Distribution & Verification
@@ -21,26 +21,32 @@ candidates:
     type: chore
     priority: P0
     suggested_knowledge_level: K3
-    expected_value: Versionamiento coherente de crates definitivos a 0.1.0, CLI y tags sin inconsistencias históricas
+    expected_value: >-
+      Versionamiento coherente de crates definitivos a 0.1.0, CLI y tags sin
+      inconsistencias históricas
     materialized_as: AN-068 (completed)
     dependencies:
       - AN-078
       - AN-079
   - id: INIT-09-02
-    title: Firma oficial, integridad y controles del pipeline de publicación
+    title: 'Firma oficial, integridad y controles del pipeline de publicación'
     type: feature
     priority: P0
     suggested_knowledge_level: K4
-    expected_value: Catálogo SHA-256 y firma Minisign con clave oficial en GitHub Actions y verificación de artefactos finales
+    expected_value: >-
+      Catálogo SHA-256 y firma Minisign con clave oficial en GitHub Actions y
+      verificación de artefactos finales
     materialized_as: AN-069 (completed)
     dependencies:
       - AN-068
   - id: INIT-09-03
-    title: Empaquetado, instalación y prerelease multiplataforma
+    title: 'Empaquetado, instalación y prerelease multiplataforma'
     type: feature
     priority: P0
     suggested_knowledge_level: K3
-    expected_value: Binarios reproducibles para Linux x86_64 GNU, Windows x86_64 MSVC y macOS ARM64 bajo identidad Wasma
+    expected_value: >-
+      Binarios reproducibles para Linux x86_64 GNU, Windows x86_64 MSVC y macOS
+      ARM64 bajo identidad Wasma
     materialized_as: AN-070 (completed)
     dependencies:
       - AN-069
@@ -49,25 +55,31 @@ candidates:
     type: feature
     priority: P1
     suggested_knowledge_level: K2
-    expected_value: Sección editorial «Sobre el autor» en la landing con contexto profesional y origen de Wasma
+    expected_value: >-
+      Sección editorial «Sobre el autor» en la landing con contexto profesional
+      y origen de Wasma
     materialized_as: AN-071 (completed)
     dependencies:
       - AN-077
   - id: INIT-09-05
-    title: Versión, commit y procedencia del despliegue en el footer
+    title: 'Versión, commit y procedencia del despliegue en el footer'
     type: feature
     priority: P1
     suggested_knowledge_level: K2
-    expected_value: Metadatos generados en build (versión web, SHA corto trazable a commit en repo canónico)
+    expected_value: >-
+      Metadatos generados en build (versión web, SHA corto trazable a commit en
+      repo canónico)
     materialized_as: AN-072 (completed)
     dependencies:
       - AN-079
   - id: INIT-09-06
-    title: Onboarding, quickstart y reconciliación de documentación
+    title: 'Onboarding, quickstart y reconciliación de documentación'
     type: docs
     priority: P0
     suggested_knowledge_level: K3
-    expected_value: Ruta de inicio rápido para desarrolladores utilizando únicamente la CLI y rutas definitivas
+    expected_value: >-
+      Ruta de inicio rápido para desarrolladores utilizando únicamente la CLI y
+      rutas definitivas
     materialized_as: AN-073 (completed)
     dependencies:
       - AN-068
@@ -77,7 +89,9 @@ candidates:
     type: feature
     priority: P1
     suggested_knowledge_level: K3
-    expected_value: Dos aplicaciones de referencia (motor de reglas de negocio e integración host) bajo identidad Wasma
+    expected_value: >-
+      Dos aplicaciones de referencia (motor de reglas de negocio e integración
+      host) bajo identidad Wasma
     materialized_as: AN-074 (completed)
     dependencies:
       - AN-070
@@ -86,7 +100,9 @@ candidates:
     type: spike
     priority: P1
     suggested_knowledge_level: K3
-    expected_value: Prueba piloto con 5-10 desarrolladores externos con métricas de descubrimiento, instalación y fricción
+    expected_value: >-
+      Prueba piloto con 5-10 desarrolladores externos con métricas de
+      descubrimiento, instalación y fricción
     materialized_as: AN-075 (ready)
     dependencies:
       - AN-073
@@ -96,7 +112,9 @@ candidates:
     type: chore
     priority: P0
     suggested_knowledge_level: K4
-    expected_value: Entrega formal de la versión pública v0.1.0 con artefactos firmados, portal y cierre de INI-009
+    expected_value: >-
+      Entrega formal de la versión pública v0.1.0 con artefactos firmados,
+      portal y cierre de INI-009
     materialized_as: AN-076 (candidate)
     dependencies:
       - AN-069
@@ -106,11 +124,15 @@ candidates:
       - AN-073
       - AN-075
   - id: INIT-09-10
-    title: Evaluación de identidad técnica, disponibilidad de nombres y estrategia de migración
+    title: >-
+      Evaluación de identidad técnica, disponibilidad de nombres y estrategia de
+      migración
     type: spike
     priority: P0
     suggested_knowledge_level: K3
-    expected_value: Inventario de referencias técnicas a agent-native, disponibilidad de nombres Wasma y estrategia de migración
+    expected_value: >-
+      Inventario de referencias técnicas a agent-native, disponibilidad de
+      nombres Wasma y estrategia de migración
     materialized_as: AN-077 (completed)
     dependencies: []
   - id: INIT-09-11
@@ -118,7 +140,9 @@ candidates:
     type: feature
     priority: P0
     suggested_knowledge_level: K4
-    expected_value: Migración consistente de manifests Cargo, lockfile, CLI binaria, imports, tests y CI a Wasma
+    expected_value: >-
+      Migración consistente de manifests Cargo, lockfile, CLI binaria, imports,
+      tests y CI a Wasma
     materialized_as: AN-078 (completed)
     dependencies:
       - AN-077
@@ -127,10 +151,13 @@ candidates:
     type: chore
     priority: P0
     suggested_knowledge_level: K4
-    expected_value: Migración auditada del repositorio GitHub a Wasma con continuidad en CI/CD, hosting wasma.org y redirecciones
+    expected_value: >-
+      Migración auditada del repositorio GitHub a Wasma con continuidad en
+      CI/CD, hosting wasma.org y redirecciones
     materialized_as: AN-079 (completed)
     dependencies:
       - AN-078
+epic: EP-009
 ---
 
 # INI-009 — Public Release, Technical Identity & Developer Adoption

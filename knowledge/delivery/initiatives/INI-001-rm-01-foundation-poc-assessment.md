@@ -34,6 +34,7 @@ candidates:
     title: Workspace Rust y CI mínima
     status: completed
     materialized_as: AN-004
+epic: EP-001
 ---
 
 # RM-01 — Foundation & POC Assessment

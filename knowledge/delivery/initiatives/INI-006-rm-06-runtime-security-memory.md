@@ -25,23 +25,26 @@ candidates:
   - id: INIT-06-01
     title: Policy loader de capabilities (manifest-driven)
     status: completed
-    materialized_as: AN-033, AN-034
+    materialized_as: 'AN-033, AN-034'
   - id: INIT-06-02
     title: Límites CPU/memoria (fuel + instance limits)
     status: completed
-    materialized_as: AN-035 (completed), AN-036 (completed), AN-037 (completed), AN-038 (completed)
+    materialized_as: >-
+      AN-035 (completed), AN-036 (completed), AN-037 (completed), AN-038
+      (completed)
   - id: INIT-06-03
     title: Ciclo de vida de instancias y aislamiento multi-tenant
     status: completed
-    materialized_as: AN-039 (completed), AN-040 (completed)
+    materialized_as: 'AN-039 (completed), AN-040 (completed)'
   - id: INIT-06-04
     title: Verificación de integridad y procedencia en carga
     status: completed
-    materialized_as: AN-041 (completed), AN-042 (completed)
+    materialized_as: 'AN-041 (completed), AN-042 (completed)'
   - id: INIT-06-05
     title: Fixtures de ejecución extrema
     status: completed
     materialized_as: AN-043 (completed)
+epic: EP-006
 ---
 
 # RM-06 — Runtime Security & Memory

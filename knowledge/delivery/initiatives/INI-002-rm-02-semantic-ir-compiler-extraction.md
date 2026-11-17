@@ -25,29 +25,35 @@ candidates:
   - id: INIT-02-01
     title: Crate `ir` — modelo + verifier v0.5
     status: completed
-    materialized_as: AN-005, AN-006, AN-007
+    materialized_as: 'AN-005, AN-006, AN-007'
   - id: INIT-02-02
     title: Crate `compiler` — IR → WASM Component
     status: completed
-    materialized_as: AN-008, AN-014 (E2E v0.5 Component Model)
+    materialized_as: 'AN-008, AN-014 (E2E v0.5 Component Model)'
   - id: INIT-02-03
     title: Contratos WIT públicos vs internos
     status: completed
-    materialized_as: AN-018 (convención documentada; reorganización física diferida hasta que RM-05/INIT-05-01 introduzca el primer contrato público)
+    materialized_as: >-
+      AN-018 (convención documentada; reorganización física diferida hasta que
+      RM-05/INIT-05-01 introduzca el primer contrato público)
   - id: INIT-02-04
     title: Determinismo + verificación de integridad (SHA-256)
     status: completed
-    materialized_as: AN-008 (sha256_hex + determinism.rs 2 tests), AN-004 (CI matrix 3 OS pin de rust-toolchain), AN-014 (E_WIT_NOT_FOUND diagnóstico explícito)
+    materialized_as: >-
+      AN-008 (sha256_hex + determinism.rs 2 tests), AN-004 (CI matrix 3 OS pin
+      de rust-toolchain), AN-014 (E_WIT_NOT_FOUND diagnóstico explícito)
     note: >-
-      Cubierto funcionalmente sin WI dedicado — `sha256_hex` + hash reproducible,
-      pin de rust-toolchain 1.85.0 + pin wasmtime 27.0 en workspace, pin
-      encoding_rs 0.8.35 vía Cargo.lock trackeado, CI matrix 3 OS valida hash
-      cross-OS en cada push. El baseline Wasmtime exacto permanece en ADR-003
-      como `[open]` hasta validación formal (fuera del scope de este INIT).
+      Cubierto funcionalmente sin WI dedicado — `sha256_hex` + hash
+      reproducible, pin de rust-toolchain 1.85.0 + pin wasmtime 27.0 en
+      workspace, pin encoding_rs 0.8.35 vía Cargo.lock trackeado, CI matrix 3 OS
+      valida hash cross-OS en cada push. El baseline Wasmtime exacto permanece
+      en ADR-003 como `[open]` hasta validación formal (fuera del scope de este
+      INIT).
   - id: INIT-02-05
     title: Modelo de memoria y Canonical ABI
     status: completed
     materialized_as: AN-016
+epic: EP-002
 ---
 
 # RM-02 — Semantic IR & Compiler Extraction

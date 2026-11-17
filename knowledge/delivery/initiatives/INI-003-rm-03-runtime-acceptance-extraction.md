@@ -26,27 +26,31 @@ candidates:
   - id: INIT-03-01
     title: Crate `runtime` — carga + ejecución Wasmtime
     status: completed
-    materialized_as: AN-009, AN-014 (WIT interface resolution)
+    materialized_as: 'AN-009, AN-014 (WIT interface resolution)'
   - id: INIT-03-03
     title: Executor de aceptación YAML
     status: completed
-    materialized_as: AN-019 (executor + stubs + regresión POC) + AN-020 (cierre técnico M3: compat YAML POC, Component Model type-only, StateReader fail-contract, matriz re-evaluada, contrato normativo)
+    materialized_as: >-
+      AN-019 (executor + stubs + regresión POC) + AN-020 (cierre técnico M3:
+      compat YAML POC, Component Model type-only, StateReader fail-contract,
+      matriz re-evaluada, contrato normativo)
   - id: INIT-03-04
     title: Propagación de errores host + imports
     status: completed
-    materialized_as: AN-010, AN-015 (hardening + WIT-granular policy)
+    materialized_as: 'AN-010, AN-015 (hardening + WIT-granular policy)'
   - id: INIT-03-05
     title: Controles mínimos de ejecución (deny-by-default)
     status: completed
-    materialized_as: AN-011, AN-015 (operation-level granularity)
+    materialized_as: 'AN-011, AN-015 (operation-level granularity)'
   - id: INIT-03-06
     title: Línea base técnica del runtime
     status: completed
-    materialized_as: AN-012, AN-017 (consolidación + Component Model)
+    materialized_as: 'AN-012, AN-017 (consolidación + Component Model)'
   - id: INIT-03-02
     title: Resolver de dependencias reutilizable
     status: completed
     materialized_as: AN-013
+epic: EP-003
 ---
 
 # RM-03 — Runtime & Acceptance Extraction

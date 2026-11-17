@@ -4,6 +4,7 @@ type: chore
 status: completed
 completed_at: 2026-10-17
 title: Suite integral de regresión POC (8 tests originales)
+initiative: INI-002
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

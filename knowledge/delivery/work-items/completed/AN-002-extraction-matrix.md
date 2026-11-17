@@ -4,6 +4,7 @@ type: spike
 status: completed
 completed_at: 2026-10-17
 title: Matriz de extracción POC → productos
+initiative: INI-001
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

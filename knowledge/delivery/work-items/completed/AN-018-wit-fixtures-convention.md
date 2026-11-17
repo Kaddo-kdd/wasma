@@ -4,6 +4,7 @@ type: chore
 status: completed
 completed_at: 2026-10-18
 title: Convención de WIT (public / internal / fixtures) sin reorganización física
+initiative: INI-002
 knowledge_level: K2
 suggested_knowledge_level: K2
 scope_confidence: high

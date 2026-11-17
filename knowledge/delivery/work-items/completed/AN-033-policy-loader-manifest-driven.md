@@ -5,6 +5,7 @@ status: completed
 completed_at: '2026-10-19'
 created_at: 2026-10-19T00:00:00.000Z
 title: Policy loader de capabilities manifest-driven
+initiative: INI-006
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

@@ -5,6 +5,7 @@ status: completed
 created_at: 2026-10-20T00:00:00.000Z
 completed_at: 2026-10-20T00:00:00.000Z
 title: Fixtures de ejecución extrema (recursión controlada, allocación masiva y trampas inducidas)
+initiative: INI-006
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

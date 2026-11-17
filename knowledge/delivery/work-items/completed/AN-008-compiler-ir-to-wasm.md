@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Compiler IR → WASM Component + hash SHA-256
+initiative: INI-002
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: medium

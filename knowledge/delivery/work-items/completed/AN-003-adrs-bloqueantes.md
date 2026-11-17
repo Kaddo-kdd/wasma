@@ -4,6 +4,7 @@ type: chore
 status: completed
 completed_at: 2026-10-17
 title: Materializar ADRs bloqueantes (001..005)
+initiative: INI-001
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

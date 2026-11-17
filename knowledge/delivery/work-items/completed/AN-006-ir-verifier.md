@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Verifier Semantic IR v0.5 + diagnósticos localizados
+initiative: INI-002
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: medium

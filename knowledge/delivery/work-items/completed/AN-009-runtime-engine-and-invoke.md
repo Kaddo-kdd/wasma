@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Runtime engine mínimo — carga + invocación de componentes
+initiative: INI-003
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: medium

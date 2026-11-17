@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Policy mínima deny-by-default para imports del host
+initiative: INI-003
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Modelo de datos IR v0.5 (tipos públicos + schemas)
+initiative: INI-002
 knowledge_level: K3
 suggested_knowledge_level: K3
 scope_confidence: high

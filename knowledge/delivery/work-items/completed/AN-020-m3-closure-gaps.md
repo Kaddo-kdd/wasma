@@ -3,6 +3,7 @@ id: AN-020
 type: feature
 status: completed
 title: Cierre técnico M3 — brechas verificables de AN-019
+initiative: INI-003
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: high

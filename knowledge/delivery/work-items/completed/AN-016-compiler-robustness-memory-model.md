@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-18
 title: Robustez del compilador y modelo de memoria (ADR-005)
+initiative: INI-002
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: medium

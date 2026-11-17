@@ -3,6 +3,7 @@ id: AN-019
 type: feature
 status: completed
 title: Executor de aceptación YAML (hito M3)
+initiative: INI-003
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: medium

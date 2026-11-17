@@ -4,6 +4,7 @@ type: feature
 status: completed
 completed_at: 2026-10-17
 title: Recuperación E2E de Semantic IR v0.5 y Component Model
+initiative: INI-002
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: medium

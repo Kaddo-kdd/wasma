@@ -4,6 +4,7 @@ type: chore
 status: completed
 completed_at: 2026-10-17
 title: Workspace Rust y CI mínima
+initiative: INI-001
 knowledge_level: K2
 suggested_knowledge_level: K2
 scope_confidence: high

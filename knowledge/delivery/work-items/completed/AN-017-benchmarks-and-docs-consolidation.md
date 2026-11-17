@@ -4,6 +4,7 @@ type: chore
 status: completed
 completed_at: 2026-10-18
 title: Consolidación de benchmarks y documentación
+initiative: INI-003
 knowledge_level: K2
 suggested_knowledge_level: K2
 scope_confidence: high

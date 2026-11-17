@@ -5,6 +5,7 @@ status: completed
 created_at: 2026-10-19T00:00:00.000Z
 completed_at: 2026-10-19T00:00:00.000Z
 title: API Tenant, gobernanza y unificación del ciclo de vida bajo límites homogéneos
+initiative: INI-006
 knowledge_level: K4
 suggested_knowledge_level: K4
 scope_confidence: high

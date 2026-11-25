@@ -1,8 +1,9 @@
 ---
 type: adr
 id: ADR-005
-status: draft
+status: accepted
 date: 2026-10-17
+accepted_at: 2026-11-25
 created_from: knowledge/tech/discovery/decision-candidates.md
 related_work_items:
   - AN-003
@@ -52,23 +53,25 @@ Contras: superficie de API grande para MVP; invita a decisiones no revisadas por
 
 ## Decision
 
-Se adopta la **Opción B como baseline operativa para MVP** con la **Opción C como ruta de optimización** gobernada por INIT-02-05/INIT-06-03:
+### Decisión vigente ratificada (2026-11-25)
 
-### Baseline operativa (MVP, hasta M3 inclusive)
+**Ratificada por autorización humana explícita (Etapa C / Fase 1F, 2026-11-25):** Se ratifica la **Opción B (`fresh Store` + instancia fresca por invocación + `copy-on-return` + `ResourceLimiter`)** como contrato productivo único, y se **incorpora formalmente la decisión de `AN-064` de no adoptar warm pool genérico de instancias vivas** (descartando la proyección original de Opción C del `2026-10-17`). La concurrencia host-side se canaliza mediante **workers acotados de instancia fresca** (`AN-065`..`AN-067`, `experimental-workers`), nunca reutilizando instancias vivas entre invocaciones. Las estrategias futuras de *pooling allocator* de Wasmtime o allocators alternativos quedan sujetas a evidencia y Work Items independientes.
+
+### Baseline operativa histórica (2026-10-17, vigente)
 
 - Toda invocación del runtime crea una **instancia nueva**; el guest termina y libera recursos al final de cada invocación.
 - Los **registros devueltos** por el componente se **copian al host** al cruzar la Canonical ABI; el runtime no retiene referencias al estado interno del guest.
 - Se usa el allocator del guest **por defecto** generado por `wit-bindgen` (hoy dlmalloc, lo que **no** convierte dlmalloc en decisión; es el default del toolchain).
 - **No hay reutilización de instancias entre tenants** en MVP. Ni siquiera dentro del mismo tenant si no hay evidencia de aislamiento.
 
-### Ruta de optimización (post-M3, gobernada)
+### Antecedente histórico descartado — Ruta de optimización Opción C (2026-10-17, no adoptada por AN-064)
 
-Antes de habilitar pool de instancias o reutilización entre invocaciones:
+> **Estado (2026-11-25): Descartada.** Originalmente se proyectó habilitar un *warm pool* en `INIT-08-03` tras completar los pasos 1–3 abajo. Los pasos 1–3 se ejecutaron (`AN-016`, `AN-012`/`AN-013`, `AN-037`), pero el paso 4 (`AN-064`) demostró que la reutilización genérica de instancias vivas retiene estado mutable (globals), por lo que **no se habilitó warm pool**.
 
 1. **INIT-02-05** documenta formalmente la semántica de Canonical ABI usada por el verifier + compiler (qué se copia, qué se mueve, qué cruza fronteras del guest).
 2. **INIT-03-06** publica una línea base técnica (cold start, warm invocation, memoria por instancia) con la baseline operativa anterior.
 3. **INIT-06-03** diseña `Tenant` API y pruebas de contaminación cruzada que **fallen sin aislamiento, pasen con él**.
-4. Sólo entonces INIT-08-03 habilita module cache + warm pool, con wipe explícito entre tenants.
+4. *(Proyección original no adoptada)* Habilitar module cache + warm pool con wipe explícito entre tenants en `INIT-08-03`.
 
 ### Prohibiciones durante baseline operativa
 
@@ -113,20 +116,31 @@ Esta es la decisión productiva de ADR-005 sobre Canonical ABI: no quedó `[open
 
 **Negativas:**
 - Cold start por invocación impacta p50/p95; se cuantifica en INIT-03-06.
-- Rendimiento vs implementaciones nativas será necesariamente peor hasta que RM-08 habilite caché y warm pool.
+- Rendimiento por invocación individual frente a implementaciones nativas incluye el coste de `Store` e instancia frescos *(actualización 2026-11-25: el warm pool proyectado originalmente para RM-08 fue descartado por `AN-064`; el escalado de throughput concurrente se aborda mediante workers acotados de instancia fresca en `AN-065`..`AN-067`)*.
 
 **Riesgos del roadmap mitigados:**
 - R-01 (fuga de estado entre tenants) — prohibida por diseño en baseline.
 - R-11 (allocator incremental sin liberación general) — tratada por aislamiento por invocación.
 
-**Seguimientos abiertos:**
-- `[deferred to: INIT-06-02]` Allocator alternativo — criterio objetivo: medir bytes con `ResourceLimiter`.
-- `[deferred to: INIT-06-03]` Estrategia para instancias persistentes — criterio objetivo: aislamiento multi-tenant.
-- `[deferred to: RM-07 / INIT-07-02]` Comportamiento ante allocación masiva — criterio objetivo: IR relaje restricciones (loops/listas/strings).
+**Seguimientos abiertos (reconciliados el 2026-11-25):**
+- `[closed — 2026-11-25]` Instancias persistentes y warm pool (`INIT-06-03` / `INIT-08-03`) — `AN-037` ratificó el aislamiento por `Store` fresco y `AN-064` (`crates/runtime/tests/warm_pool_feasibility.rs`) demostró que la reutilización genérica de instancias vivas retiene estado mutable (globals), concluyendo con la **no-adopción** del warm pool genérico.
+- `[closed — 2026-11-25]` Allocación masiva y estrés de memoria (`INIT-06-02` / `INIT-06-05` / `INIT-07-02`) — `AN-036` incorporó `ResourceLimiter` (`crates/runtime/src/limits.rs`), `INIT-06-05` cubrió fixtures WASM de estrés extremo (recursión, allocación masiva y traps) sin caída del proceso, y `INIT-07-02` incorporó `string` y `result<T, E>` en IR v0.6 bajo `--experimental`.
+- `[deferred — post-v0.1.0]` Allocator alternativo del guest — no se introduce cambio de allocator para `v0.1.0`; permanece diferido a trabajo futuro condicionado a evidencia de perfilado que demuestre que la allocación del guest domina el coste frente a instanciación/ejecución.
 
-Cerrados por AN-016 (ver `memory-model-notes.md`):
+Cerrados históricamente por AN-016 (ver `memory-model-notes.md`):
 - `[chosen]` Canonical ABI: copy-on-return + fresh Store per invoke.
 - `[chosen]` Eliminación de la dependencia del cwd en la resolución de WIT via `CompileContext` (impacto cruzado con el modelo de memoria vía reproducibilidad de artefactos).
+
+## Reconciliación documental (2026-11-25)
+
+> **Nota de trazabilidad:** Esta sección reconcilia la ruta de optimización proyectada originalmente el `2026-10-17` (Opción C / warm pool en `INIT-08-03`) con la evidencia empírica obtenida en RM-06 (`AN-036`, `AN-037`) y RM-08 (`AN-064`..`AN-067`). Conserva fecha y procedencia originales; la ratificación a `status: accepted` (`accepted_at: 2026-11-25`) corresponde a autorización humana explícita en Etapa C / Fase 1F.
+
+- **Decisión vigente (baseline confirmada):** Se mantiene como contrato productivo único **`fresh Store` + instancia fresca por invocación**, **`copy-on-return`** al cruzar la Canonical ABI (`AN-016`), y contención de crecimiento de memoria lineal por solicitud mediante `ResourceLimiter` (`AN-036`, `crates/runtime/src/limits.rs`).
+- **No-adopción de reutilización genérica de instancias vivas (`AN-064`):** El experimento `AN-064` (`crates/runtime/tests/warm_pool_feasibility.rs`) comprobó que una instancia Wasmtime reutilizada conserva estado mutable entre llamadas (p. ej. globals) y que la API usada por el runtime no ofrece un reset genérico verificable de `Store`, memoria, tablas, globals, recursos y host context. En consecuencia, **la ruta de warm pool genérico (Opción C original) queda formalmente descartada** para los componentes actuales.
+- **Evolución real adoptada en RM-08 — Workers acotados de instancia fresca (`AN-065`, `AN-066`, `AN-067`):** En lugar de reutilizar instancias vivas, la concurrencia host-side se diseñó y caracterizó en `crates/runtime/src/workers.rs` (aislada tras la feature opt-in `experimental-workers`) con capacidad fija, backpressure explícito, recuperación ante fallos y creación de `Store` e instancia frescos por cada solicitud.
+- **Distinción arquitectónica explícita (no confundir):**
+  - *Reutilización de instancias vivas (warm pool de aplicación):* descartada por `AN-064` porque retiene estado mutable del guest entre invocaciones.
+  - *Pooling allocation strategy de Wasmtime (`PoolingAllocationConfig` / pooling allocator a nivel de motor):* mecanismo interno de reserva/reciclaje de slots de memoria virtual del motor Wasmtime que **no** reutiliza el estado lógico de una instancia viva. No está activado ni implementado en esta reconciliación; cualquier evaluación futura requeriría un Work Item y pruebas de seguridad/compatibilidad cross-OS independientes.
 
 ## Related Capabilities
 

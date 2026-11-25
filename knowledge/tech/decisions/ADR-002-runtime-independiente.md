@@ -1,8 +1,9 @@
 ---
 type: adr
 id: ADR-002
-status: draft
+status: accepted
 date: 2026-10-17
+accepted_at: 2026-11-25
 created_from: knowledge/tech/discovery/decision-candidates.md
 related_work_items:
   - AN-003
@@ -37,13 +38,23 @@ Contras: metadatos del artefacto (manifiesto, hash) deben especificarse como con
 
 ## Decision
 
+### Decisión histórica original (2026-10-17)
+
 Se adopta la **Opción C**:
 
 - **Grafo de dependencias prohibidas:** `runtime` **no** puede declarar como dependencia Cargo (ni directa ni transitiva por `path`) a `compiler`, a ningún adaptador LLM, ni a crates de Kaddo.
-- **Grafo permitido:** `runtime` depende únicamente de `ir` (para contratos de metadatos), `wasmtime` y utilidades de bajo nivel (serde, thiserror).
-- **Contrato de metadatos:** cualquier información del artefacto que el runtime necesita leer (hash, versión, firma) se define en `ir::manifest::` o en un submódulo claramente nombrado dentro de `ir`.
+- **Grafo permitido (propuesta inicial):** `runtime` depende únicamente de `ir` (para contratos de metadatos), `wasmtime` y utilidades de bajo nivel (serde, thiserror).
+- **Contrato de metadatos (propuesta inicial — enmendada abajo):** originalmente se propuso definir `manifest::` dentro de `ir` o en un crate dedicado `metadata`.
 - **Carga runtime de componentes externos:** el runtime acepta componentes WIT-compatibles independientes de su origen (incluidos los no generados por Agent-Native), siempre que respeten el manifiesto. Esta propiedad es parte del contrato del runtime, no una característica opcional.
 - **Lint CI (obligatorio):** un paso de CI falla si `cargo tree -p runtime` lista `compiler`, cualquier adaptador LLM o cualquier crate de Kaddo. Este lint se materializa en INIT-01-01 junto con el workspace.
+
+### Decisión vigente ratificada (2026-11-25)
+
+- **Ratificada por autorización humana explícita (Etapa C / Fase 1F, 2026-11-25):** Se ratifica la independencia productiva de `wasma-runtime` (`crates/runtime/Cargo.toml`), sin declarar en `[dependencies]` a `wasma-compiler`, ningún adaptador LLM ni crates de Kaddo (auditado en CI con `--edges normal`).
+- **Ubicación del contrato de manifiesto (enmienda ratificada respecto a 2026-10-17):** El contrato declarativo de capacidades (`ComponentManifest`, `ManifestCapabilities`, v0.1) vive en **`crates/runtime/src/manifest.rs`**, no en `wasma-ir`, evitando acoplar `wasma-ir` a políticas de autorización del host.
+- **Grafo de dependencias vigentes (`crates/runtime/Cargo.toml`):**
+  - `[dependencies]`: `wasma-ir`, `wasmtime` (caret `"29.0.1"`, resuelta a `29.0.1` en `Cargo.lock`), `wasmtime-wasi = "=29.0.1"`, `serde`, `serde_json`, `serde_yaml2`, `sha2`, `thiserror`, `bytes`.
+  - `[dev-dependencies]`: permite `wasma-compiler` exclusivamente para compilar fixtures de pruebas internas; no entra en el grafo productivo ni alcanza a consumidores de `wasma-runtime`.
 
 ## Consequences
 
@@ -61,8 +72,18 @@ Se adopta la **Opción C**:
 - Business risk: ejecución dependiente del LLM.
 
 **Seguimientos abiertos:**
-- `[open]` Diseñar el lint CI concreto para enforcement — INIT-01-01 lo materializa.
-- `[open]` Definir el crate exacto donde vive `manifest::` (dentro de `ir` o en un crate dedicado `metadata`) — se decide al abrir INIT-02-01.
+- `[closed — 2026-11-25]` Diseñar el lint CI concreto para enforcement — materializado en `.github/workflows/ci.yml` (`Enforce ADR-002`, líneas 74–86) con `cargo tree -p wasma-runtime --prefix none --edges normal` en Linux, Windows y macOS.
+- `[closed — 2026-11-25]` Definir la ubicación exacta de `manifest::` — resuelto en la implementación dentro de `crates/runtime/src/manifest.rs` (ver reconciliación abajo).
+
+## Reconciliación documental (2026-11-25)
+
+> **Nota de trazabilidad:** Esta sección alinea el texto original (`2026-10-17`) con la implementación real en `main` y la migración de identidad de [ADR-008](ADR-008-identidad-tecnica-migracion-wasma.md) (`accepted`). Conserva fecha y procedencia originales; la ratificación a `status: accepted` (`accepted_at: 2026-11-25`) corresponde a autorización humana explícita en Etapa C / Fase 1F.
+
+- **Invariante productiva ratificada:** En `crates/runtime/Cargo.toml`, la sección `[dependencies]` de `wasma-runtime` **no incluye** `wasma-compiler`, ningún adaptador LLM ni dependencias de Kaddo. Esto se audita automáticamente en CI en los 3 OS.
+- **Dependencias productivas reales vigentes (`crates/runtime/Cargo.toml`):** `wasma-ir`, `wasmtime = "29.0.1"`, `wasmtime-wasi = "=29.0.1"` (confinado a este crate para WASI Preview 2, AN-044), `serde`, `serde_json`, `serde_yaml2`, `sha2`, `thiserror` y `bytes`.
+- **Dependencia exclusiva de pruebas (`[dev-dependencies]`):** `crates/runtime/Cargo.toml` declara `wasma-compiler` únicamente en `[dev-dependencies]` para generar fixtures WASM en pruebas internas de integración y humo. No forma parte del grafo productivo ni alcanza a consumidores de `wasma-runtime` (como `examples/embedded-host/` o `examples/aws-lambda/`).
+- **Ubicación real del contrato de manifiesto:** Frente a la propuesta original (`ir::manifest::`), el contrato declarativo de capacidades del componente se implementó en `crates/runtime/src/manifest.rs` (`ComponentManifest`, `ManifestCapabilities`, versión `"0.1"`), evitando acoplar `wasma-ir` a detalles de policy del host.
+- **Identidad vigente (ADR-008):** La referencia histórica `cargo add agent-native-runtime` corresponde hoy a `wasma-runtime` y el binario unificado a `wasma`.
 
 ## Related Capabilities
 

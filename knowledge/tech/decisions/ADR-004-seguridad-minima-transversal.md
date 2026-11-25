@@ -1,8 +1,9 @@
 ---
 type: adr
 id: ADR-004
-status: draft
+status: accepted
 date: 2026-10-17
+accepted_at: 2026-11-25
 created_from: knowledge/tech/discovery/decision-candidates.md
 related_work_items:
   - AN-003
@@ -61,12 +62,12 @@ Se adopta la **Opción B** con cuatro controles mínimos obligatorios desde RM-0
 - Verificación de firma (INIT-06-04).
 - Fixtures de ejecución extrema (INIT-06-05).
 
-Nada de lo que RM-06 añade debe presentarse como "ahora el runtime es seguro"; el runtime ya es seguro-por-defecto desde M3.
+Nada de lo que RM-06 añade debe presentarse como "ahora el runtime es seguro"; el runtime aplica controles `deny-by-default` y `fail-explicit` desde M3 *(acotación 2026-11-25: esto define una postura defensiva por defecto, no una certificación general de seguridad ni ausencia de riesgos)*.
 
 ## Consequences
 
 **Positivas:**
-- RC v0.1.0 (M5) distribuido en RM-05 no requiere advertencias de seguridad.
+- RC v0.1.0 (M5) distribuido en RM-05 incorpora los controles base `deny-by-default` y `fail-explicit` desde el inicio *(acotación 2026-11-25: sigue requiriendo documentar límites de alcance, modelo de amenazas y advertencias operativas en despliegues productivos)*.
 - RM-06 queda como refinamiento genuino, no como reparación.
 - Los `RuntimeError` tipados simplifican debugging y auditoría.
 
@@ -79,8 +80,15 @@ Nada de lo que RM-06 añade debe presentarse como "ahora el runtime es seguro"; 
 - R-10 (afirmaciones sin medición) — parcialmente, al hacer explícito que seguridad ≠ rendimiento.
 
 **Seguimientos abiertos:**
-- `[open]` Formato exacto de la allow-list en el manifiesto (JSON vs YAML) — INIT-03-05.
-- `[open]` Lista inicial de capabilities soportadas (consola, filesystem, …) — se define por bloque (RM-07 cubre stdio).
+- `[closed — 2026-11-25]` Formato exacto de la allow-list en el manifiesto — implementado con soporte para **YAML y JSON** en `crates/runtime/src/manifest.rs` (`ComponentManifest`, versión `"0.1"`, `#[serde(deny_unknown_fields)]`), evaluado contra `HostPolicy` (`crates/runtime/src/policy.rs`) bajo `Requested ∩ Granted` y cubierto por `crates/runtime/tests/manifest_policy.rs` y `crates/runtime/tests/manifest_negative_tests.rs`.
+- `[closed — 2026-11-25]` Lista inicial de capabilities soportadas — implementada en `crates/runtime/src/policy.rs` y `crates/runtime/src/wasi.rs` para WASI Preview 2 de consola/CLI en memoria (`wasi:cli/stdin@0.2.0`, `stdout@0.2.0`, `stderr@0.2.0`, `environment@0.2.0`, `exit@0.2.0`), manteniendo `deny-by-default` sin acceso implícito a filesystem ni red.
+
+## Reconciliación documental (2026-11-25)
+
+> **Nota de trazabilidad:** Esta sección cierra los dos seguimientos históricos (`2026-10-17`) con referencias al código y precisa el alcance real de las garantías implementadas en RM-02..RM-07 y [ADR-006](ADR-006-empaquetado-firma-verificacion.md) (`accepted`). La ratificación a `status: accepted` (`accepted_at: 2026-11-25`) corresponde a autorización humana explícita en Etapa C / Fase 1F y **no** constituye certificación general de seguridad.
+
+- **Cuatro invariantes vigentes verificadas:** (1) errores tipados `RuntimeError` fail-explicit (`crates/runtime/src/error.rs`), (2) política `deny-by-default` pre-instantiate en tres niveles (`crates/runtime/src/policy.rs`, `manifest.rs`), (3) compilación determinista con SHA-256 canónico (`crates/compiler/`) y verificación opcional con Minisign en `wasma run --verify` (`crates/cli/tests/run_verify.rs`, ADR-006), y (4) publicación atómica con preservación de versión activa (`crates/cli/src/publish/atomic.rs`, `crates/cli/tests/atomic_publish.rs`).
+- **Precisión sobre el alcance de garantías:** La afirmación histórica *"seguro por defecto"* significa que el runtime aplica `deny-by-default` en imports/capabilities, falla explícitamente y ejecuta con `Store` fresco y límites configurables (fuel y `ResourceLimiter`). **No** constituye una certificación general de seguridad, **no** implica ausencia de vulnerabilidades en el motor subyacente o en el host, y **no** sustituye controles de aislamiento a nivel de sistema operativo/contenedor en despliegues productivos.
 
 ## Related Capabilities
 

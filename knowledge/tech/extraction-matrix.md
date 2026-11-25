@@ -121,9 +121,9 @@ Los 35 directorios `runs/` son **registros de ejecución**, no código.
 
 | Decisión | Count | Comentario |
 |---|---|---|
-| **migrate** | 24 | 1 pieza (C-04 intérprete) + 9 WIT + 18 suites YAML + 2 schemas y 5 programas IR agregados por fila (S-01, S-02) + 3 narrativas (N-02) + 1 doc Semantic IR (N-01) + 2 runs (R-01, R-04) + 2 reportes (B-01, B-03). Las filas S-01/S-02 agrupan múltiples archivos del mismo tipo. |
+| **migrate** | 23 | 1 pieza (`C-04` intérprete) + 9 WIT (`W-01`..`W-09`) + 5 filas de suites YAML (`Y-01`..`Y-05`, que agrupan 18 suites) + 2 filas IR (`S-01` schemas, `S-02` programas) + 2 filas de specs (`N-01` doc Semantic IR, `N-02` 3 narrativas) + 2 runs (`R-01`, `R-04`) + 2 reportes (`B-01`, `B-03`). Algunas filas agrupan múltiples archivos del mismo tipo. |
 | **redesign** | 6 | C-01 (irtool→ir+compiler), C-03 (orchestrator lib→orq+publishing), C-05 (agent→LlmProvider), C-07 (runner→runtime), N-03 (tasks), N-04 (work-items) |
-| **drop** | 11 | C-02, C-06 (CLIs POC), C-08 (4 baseline-rust agregados), Y-06, R-02, R-03, R-05, B-02, X-01, X-02, X-03, X-04 |
+| **drop** | 12 | C-02, C-06 (CLIs POC), C-08 (4 baseline-rust agregados), Y-06, R-02, R-03, R-05, B-02, X-01, X-02, X-03, X-04 |
 
 **Concentración relevante:**
 

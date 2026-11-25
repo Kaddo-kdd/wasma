@@ -2,7 +2,7 @@
 type: epic
 id: EP-001
 title: 'Foundation, Architecture Baseline & POC Governance'
-status: in-progress
+status: completed
 plan: PLAN-001
 milestone: M1
 outcome: >-
@@ -78,23 +78,6 @@ outcome_verifications:
     method: automated
     verified_at: '2026-11-25'
   - criterion: >-
-      Aceptación formal humana (status: accepted) de las cinco decisiones
-      arquitectónicas bloqueantes (ADR-001 a ADR-005).
-    status: manual-review-required
-    evidence: >-
-      Inspección de frontmatter confirma que los cinco ADRs fundacionales
-      (ADR-001 a ADR-005) permanecen en status: draft (0/5 en status: accepted).
-      No existe aceptación formal humana registrada; criterio retenido en
-      manual-review-required hasta decisión humana explícita.
-    reference: >-
-      knowledge/tech/decisions/ADR-001-arquitectura-inicial.md,
-      knowledge/tech/decisions/ADR-002-runtime-independiente.md,
-      knowledge/tech/decisions/ADR-003-semantic-ir-v05-baseline.md,
-      knowledge/tech/decisions/ADR-004-seguridad-minima-transversal.md,
-      knowledge/tech/decisions/ADR-005-modelo-memoria-canonical-abi.md
-    method: manual
-    verified_at: '2026-11-25'
-  - criterion: >-
       Workspace Cargo multimodular inicial (crates/ir, crates/compiler,
       crates/runtime, crates/cli) operativo con pipeline CI validado en Linux,
       Windows y macOS.
@@ -114,6 +97,35 @@ outcome_verifications:
       https://github.com/Kaddo-kdd/wasma/actions/runs/44127404785
     method: automated
     verified_at: '2026-11-25'
+  - criterion: >-
+      Aceptación formal humana (status: accepted) de las cinco decisiones
+      arquitectónicas bloqueantes (ADR-001 a ADR-005).
+    status: passed
+    evidence: >-
+      Los cinco ADRs fundacionales (ADR-001 a ADR-005) fueron ratificados
+      mediante autorización humana explícita en la Fase 1F con status: accepted
+      y accepted_at: 2026-11-25, integrados en main mediante el commit
+      2e687d6c6329043f3ec9ceb7e4f583add9883db3 y verificados con CI exitosa
+      (GitHub Actions Run 45659339942, 7/7 jobs en success) y kaddo adr --json
+      (8/8 accepted, 0 draft).
+    reference: >-
+      knowledge/tech/decisions/ADR-001-arquitectura-inicial.md,
+      knowledge/tech/decisions/ADR-002-runtime-independiente.md,
+      knowledge/tech/decisions/ADR-003-semantic-ir-v05-baseline.md,
+      knowledge/tech/decisions/ADR-004-seguridad-minima-transversal.md,
+      knowledge/tech/decisions/ADR-005-modelo-memoria-canonical-abi.md,
+      commit:2e687d6c6329043f3ec9ceb7e4f583add9883db3,
+      https://github.com/Kaddo-kdd/wasma/actions/runs/45659339942
+    method: manual
+    verified_at: '2026-11-25'
+completed_at: '2026-11-25'
+completion_decision:
+  readiness: READY_TO_COMPLETE
+  decided_at: '2026-11-25'
+  reasons:
+    - >-
+      All success criteria are verified and committed work is complete. Human
+      approval is still required to close.
 ---
 
 # EP-001: Foundation, Architecture Baseline & POC Governance
